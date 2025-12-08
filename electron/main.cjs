@@ -5,6 +5,11 @@ const fs = require('fs').promises
 let mainWindow
 
 function createWindow() {
+  const iconPath =
+    process.platform === 'win32'
+      ? join(__dirname, '../build/iconWin.ico')
+      : join(__dirname, '../build/iconMac.icns')
+
   mainWindow = new BrowserWindow({
     width: 1200,
     height: 800,
@@ -12,7 +17,7 @@ function createWindow() {
     minHeight: 600,
     show: false,
     frame: false,
-    icon: join(__dirname, '../build/iconWin.ico'),
+    icon: iconPath,
     autoHideMenuBar: true,
     webPreferences: {
       preload: join(__dirname, '../electron/preload.cjs'),
