@@ -6,6 +6,9 @@ on:
       - 'v*'
   workflow_dispatch:
 
+permissions:
+  contents: write
+
 jobs:
   release:
     runs-on: ${{ matrix.os }}
@@ -25,9 +28,6 @@ jobs:
 
       - name: Install Dependencies
         run: npm install
-
-      # Linux/Mac specific: Compile better-sqlite3 if needed (automatically handled by npm install scripts usually, but good to ensure)
-      # On GitHub Actions macos-latest, python/make/g++ are available.
 
       - name: Build & Release
         uses: samuelmeuli/action-electron-builder@v1
