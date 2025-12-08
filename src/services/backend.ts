@@ -1,42 +1,46 @@
-const getApiBaseUrl = () => {
-  try {
-    const v = localStorage.getItem("apiBaseUrl");
-    return v && v.trim() ? v.trim() : "";
-  } catch {
-    return "";
+
+const request = async (path: string, init?: RequestInit) => {
+  const base = import.meta.env.VITE_IP || "";
+  const res = await fetch(`${base}${path}`, init);
+  const ct = res.headers.get("content-type") || "";
+  const isJson = ct.includes("application/json");
+  const payload = isJson
+    ? await res.json().catch(() => null)
+    : await res.text();
+  console.log("base", base);
+  console.log("res", res);
+  console.log("payload", payload);
+
+  if (!res.ok) {
+    const msg =
+      typeof payload === "string" ? payload : JSON.stringify(payload || {});
+    throw new Error(`HTTP ${res.status} ${res.statusText}: ${msg}`);
   }
+  return payload;
 };
 
 const httpGet = async (path: string) => {
-  const base = getApiBaseUrl();
-  const res = await fetch(`${base}${path}`);
-  return res.json();
+  return request(path);
 };
 
 const httpPost = async (path: string, body: any) => {
-  const base = getApiBaseUrl();
-  const res = await fetch(`${base}${path}`, {
+  return request(path, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(body),
   });
-  return res.json();
 };
 
 const httpPut = async (path: string, body: any) => {
-  const base = getApiBaseUrl();
-  const res = await fetch(`${base}${path}`, {
+  return request(path, {
     method: "PUT",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(body),
   });
-  return res.json();
 };
 
 const httpDelete = async (path: string) => {
-  const base = getApiBaseUrl();
-  const res = await fetch(`${base}${path}`, { method: "DELETE" });
-  return res.json();
+  return request(path, { method: "DELETE" });
 };
 
 export const listProjects = async () => {

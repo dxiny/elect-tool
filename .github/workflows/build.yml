@@ -1,0 +1,51 @@
+name: Build/Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+
+jobs:
+  release:
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      matrix:
+        os: [macos-latest, windows-latest]
+
+    steps:
+      - name: Check out Git repository
+        uses: actions/checkout@v4
+
+      - name: Install Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install Dependencies
+        run: npm install
+
+      # Linux/Mac specific: Compile better-sqlite3 if needed (automatically handled by npm install scripts usually, but good to ensure)
+      # On GitHub Actions macos-latest, python/make/g++ are available.
+
+      - name: Build & Release
+        uses: samuelmeuli/action-electron-builder@v1
+        with:
+          # GitHub token, automatically provided to the action
+          # (No need to define this secret in the repo settings)
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+
+          # If the commit is tagged with a version (e.g. "v1.0.0"),
+          # release the app after building
+          release: ${{ startsWith(github.ref, 'refs/tags/v') }}
+        env:
+          # macOS code signing certificate
+          # MAC_CERTS: ${{ secrets.MAC_CERTS }}
+          # MAC_CERTS_PASSWORD: ${{ secrets.MAC_CERTS_PASSWORD }}
+          # Windows code signing certificate
+          # WINDOWS_CSC_LINK: ${{ secrets.WINDOWS_CSC_LINK }}
+          # WINDOWS_CSC_KEY_PASSWORD: ${{ secrets.WINDOWS_CSC_KEY_PASSWORD }}
+          
+          # Environment variables for better-sqlite3 compilation
+          PYTHON_PATH: python

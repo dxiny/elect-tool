@@ -2,7 +2,6 @@ import { createRouter, createWebHashHistory } from 'vue-router'
 import Home from '@/pages/home/index.vue'
 import Markdown from '@/pages/editor/Markdown.vue'
 import Charts from '@/pages/charts/Index.vue'
-import Config from '@/pages/config/Index.vue'
 import About from '@/pages/about/Index.vue'
 import Profile from '@/pages/profile/Index.vue'
 import AIIndex from '@/pages/ai/Index.vue'
@@ -37,12 +36,6 @@ const routes = [
     path: '/charts',
     name: 'Charts',
     component: Charts
-  },
-  {
-    path: '/config',
-    name: 'Config',
-    component: Config,
-    meta: { title: '公共配置' }
   },
   {
     path: '/profile',
