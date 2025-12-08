@@ -32,20 +32,9 @@ jobs:
       - name: Build & Release
         uses: samuelmeuli/action-electron-builder@v1
         with:
-          # GitHub token, automatically provided to the action
-          # (No need to define this secret in the repo settings)
           github_token: ${{ secrets.GITHUB_TOKEN }}
-
-          # If the commit is tagged with a version (e.g. "v1.0.0"),
-          # release the app after building
           release: ${{ startsWith(github.ref, 'refs/tags/v') }}
+          # Explicitly request dmg for macOS and nsis (exe) for Windows
+          args: "--mac dmg --win nsis"
         env:
-          # macOS code signing certificate
-          # MAC_CERTS: ${{ secrets.MAC_CERTS }}
-          # MAC_CERTS_PASSWORD: ${{ secrets.MAC_CERTS_PASSWORD }}
-          # Windows code signing certificate
-          # WINDOWS_CSC_LINK: ${{ secrets.WINDOWS_CSC_LINK }}
-          # WINDOWS_CSC_KEY_PASSWORD: ${{ secrets.WINDOWS_CSC_KEY_PASSWORD }}
-          
-          # Environment variables for better-sqlite3 compilation
           PYTHON_PATH: python
