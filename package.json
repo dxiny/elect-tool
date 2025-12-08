@@ -3,6 +3,7 @@
   "private": true,
   "version": "1.0.0",
   "description": "初始化项目",
+  "productName": "ElectTool",
   "type": "module",
   "main": "electron/main.cjs",
   "scripts": {
@@ -38,6 +39,11 @@
   },
   "build": {
     "appId": "com.elect.tool",
+    "productName": "ElectTool",
+    "directories": {
+      "output": "dist_electron",
+      "buildResources": "build"
+    },
     "files": [
       "dist/**",
       "electron/**"
@@ -46,10 +52,17 @@
       "**/*.node"
     ],
     "win": {
-      "target": "nsis"
+      "target": "nsis",
+      "icon": "build/iconMac.ico"
     },
     "mac": {
-      "target": "dmg"
+      "target": "dmg",
+      "icon": "build/iconWin.icns"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "shortcutName": "ElectTool"
     }
   }
 }
