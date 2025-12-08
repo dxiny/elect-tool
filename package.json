@@ -1,7 +1,7 @@
 {
   "name": "elect-tool",
   "private": true,
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "初始化项目",
   "productName": "ElectTool",
   "type": "module",
