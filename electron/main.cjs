@@ -12,6 +12,7 @@ function createWindow() {
     minHeight: 600,
     show: false,
     frame: false,
+    icon: join(__dirname, '../build/iconWin.ico'),
     autoHideMenuBar: true,
     webPreferences: {
       preload: join(__dirname, '../electron/preload.cjs'),

@@ -53,11 +53,11 @@
     ],
     "win": {
       "target": "nsis",
-      "icon": "build/iconMac.ico"
+      "icon": "build/iconWin.ico"
     },
     "mac": {
       "target": "dmg",
-      "icon": "build/iconWin.icns"
+      "icon": "build/iconMac.icns"
     },
     "nsis": {
       "oneClick": false,
