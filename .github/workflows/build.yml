@@ -29,12 +29,22 @@ jobs:
       - name: Install Dependencies
         run: npm install
 
-      - name: Build & Release
+      - name: Build & Release (Windows)
+        if: matrix.os == 'windows-latest'
         uses: samuelmeuli/action-electron-builder@v1
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           release: ${{ startsWith(github.ref, 'refs/tags/v') }}
-          # Explicitly request dmg for macOS and nsis (exe) for Windows
-          args: "--mac dmg --win nsis"
+          args: "--win nsis"
+        env:
+          PYTHON_PATH: python
+
+      - name: Build & Release (macOS)
+        if: matrix.os == 'macos-latest'
+        uses: samuelmeuli/action-electron-builder@v1
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          release: ${{ startsWith(github.ref, 'refs/tags/v') }}
+          args: "--mac dmg"
         env:
           PYTHON_PATH: python
