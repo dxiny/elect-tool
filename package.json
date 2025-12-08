@@ -2,6 +2,7 @@
   "name": "elect-tool",
   "private": true,
   "version": "1.0.6",
+  "author": "ElectTool",
   "description": "初始化项目",
   "productName": "ElectTool",
   "type": "module",
