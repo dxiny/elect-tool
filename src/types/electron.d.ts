@@ -18,10 +18,6 @@ interface ElectronAPI {
   // Event listeners
   on(channel: string, callback: Function): void
   removeListener(channel: string, callback: Function): void
-  listProjects(): Promise<{ success: boolean; data: any[] }>
-  createProject(payload: { name: string; ownerId?: string | null; description?: string }): Promise<{ success: boolean; data: any }>
-  listAssets(projectId?: string): Promise<{ success: boolean; data: any[] }>
-  addAsset(payload: { projectId?: string | null; type?: string; filename?: string; path?: string; size?: number; hash?: string; metadata?: any }): Promise<{ success: boolean; data: any }>
 }
 
 interface Window {

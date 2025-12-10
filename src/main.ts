@@ -5,10 +5,13 @@ import App from "./App.vue";
 import router from "./router";
 import zhCN from "./locales/zh-CN";
 import enUS from "./locales/en-US";
-import * as ElementPlusIconsVue from "@element-plus/icons-vue";
-import ElementPlus from "element-plus";
-import "element-plus/dist/index.css";
+import * as AntdIconsVue from "@ant-design/icons-vue";
+import Antd from "ant-design-vue";
+import "ant-design-vue/dist/reset.css";
 import { initThemeVars } from "./utils/theme";
+import "./styles/theme/variables.css";
+import "./styles/theme/light.css";
+import "./styles/theme/dark.css";
 
 const i18n = createI18n({
   legacy: false,
@@ -26,8 +29,8 @@ const app = createApp(App);
 app.use(pinia);
 app.use(router);
 app.use(i18n);
-app.use(ElementPlus);
-for (const [key, component] of Object.entries(ElementPlusIconsVue)) {
+app.use(Antd);
+for (const [key, component] of Object.entries(AntdIconsVue)) {
   app.component(key, component);
 }
 initThemeVars();

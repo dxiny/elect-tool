@@ -1,48 +1,64 @@
 <template>
-  <el-card>
-    <template #header>AI聊天</template>
-    <el-form inline>
-      <el-form-item label="Base URL">
-        <el-input v-model="baseUrl" size="small" />
-      </el-form-item>
-      <el-form-item label="API Key">
-        <el-input v-model="apiKey" type="password" size="small" />
-      </el-form-item>
-      <el-form-item label="Model">
-        <el-input v-model="model" size="small" />
-      </el-form-item>
-      <el-form-item>
-        <el-button type="primary" size="small" @click="saveConfig">保存</el-button>
-      </el-form-item>
-    </el-form>
+  <a-card title="AI聊天">
+    <a-form layout="inline">
+      <a-form-item label="Base URL">
+        <a-input v-model:value="baseUrl" size="small" />
+      </a-form-item>
+      <a-form-item label="API Key">
+        <a-input v-model:value="apiKey" type="password" size="small" />
+      </a-form-item>
+      <a-form-item label="Model">
+        <a-input v-model:value="model" size="small" />
+      </a-form-item>
+      <a-form-item>
+        <a-button type="primary" size="small" @click="saveConfig"
+          >保存</a-button
+        >
+      </a-form-item>
+    </a-form>
 
-    <el-row :gutter="12" style="margin-top:12px">
-      <el-col :span="24">
-        <el-card shadow="never">
-          <el-scrollbar height="58vh" ref="listEl">
-            <el-space direction="vertical" style="width:100%">
-              <el-card v-for="(m, i) in messages" :key="i" :class="m.role" shadow="never">
+    <a-row :gutter="12" style="margin-top: 12px">
+      <a-col :span="24">
+        <a-card :bordered="false" class="chat-container-card">
+          <div class="chat-list" ref="listEl">
+            <a-space direction="vertical" style="width: 100%">
+              <a-card
+                v-for="(m, i) in messages"
+                :key="i"
+                :class="m.role"
+                :bordered="false"
+                size="small"
+              >
                 <div class="content">{{ m.content }}</div>
-              </el-card>
-            </el-space>
-          </el-scrollbar>
-        </el-card>
-      </el-col>
-    </el-row>
+              </a-card>
+            </a-space>
+          </div>
+        </a-card>
+      </a-col>
+    </a-row>
 
-    <el-card shadow="never" style="margin-top:12px">
-      <el-input v-model="input" type="textarea" :rows="3" placeholder="输入你的问题..." />
-      <el-space style="margin-top:8px; justify-content:flex-end; width:100%">
-        <el-button :disabled="loading || !input.trim()" type="primary" @click="send">发送</el-button>
-        <el-button :disabled="loading" @click="clear">清空</el-button>
-      </el-space>
-    </el-card>
-  </el-card>
+    <a-card :bordered="false" style="margin-top: 12px">
+      <a-textarea
+        v-model:value="input"
+        :rows="3"
+        placeholder="输入你的问题..."
+      />
+      <a-space style="margin-top: 8px; justify-content: flex-end; width: 100%">
+        <a-button
+          :disabled="loading || !input.trim()"
+          type="primary"
+          @click="send"
+          >发送</a-button
+        >
+        <a-button :disabled="loading" @click="clear">清空</a-button>
+      </a-space>
+    </a-card>
+  </a-card>
 </template>
 
 <script setup lang="ts">
 import { ref, nextTick } from "vue";
-import { ElMessage } from "element-plus";
+import { message } from "ant-design-vue";
 
 type ChatMsg = { role: "user" | "assistant"; content: string };
 
@@ -60,7 +76,7 @@ const saveConfig = () => {
   localStorage.setItem("ai:baseUrl", baseUrl.value);
   localStorage.setItem("ai:apiKey", apiKey.value);
   localStorage.setItem("ai:model", model.value);
-  ElMessage.success("配置已保存");
+  message.success("配置已保存");
 };
 
 const scrollToBottom = async () => {
@@ -90,7 +106,7 @@ const callModel = async (history: ChatMsg[]) => {
 
 const send = async () => {
   if (!baseUrl.value || !apiKey.value || !model.value) {
-    ElMessage.warning("请先填写 Base URL / API Key / Model");
+    message.warning("请先填写 Base URL / API Key / Model");
     return;
   }
   const text = input.value.trim();
@@ -119,7 +135,28 @@ const clear = () => {
 </script>
 
 <style scoped>
-.user .content { background: var(--sidebar-active-bg); color: var(--sidebar-active-text); padding: 8px 10px; border-radius: 8px; }
-.assistant .content { background: #fff; color: #333; padding: 8px 10px; border-radius: 8px; }
-.content { white-space: pre-wrap; word-break: break-word; }
+.chat-container-card {
+  border: 1px solid #f0f0f0;
+}
+.chat-list {
+  height: 58vh;
+  overflow-y: auto;
+  padding: 10px;
+}
+.user .content {
+  background: var(--sidebar-active-bg);
+  color: var(--sidebar-active-text);
+  padding: 8px 10px;
+  border-radius: 8px;
+}
+.assistant .content {
+  background: #f5f5f5;
+  color: #333;
+  padding: 8px 10px;
+  border-radius: 8px;
+}
+.content {
+  white-space: pre-wrap;
+  word-break: break-word;
+}
 </style>

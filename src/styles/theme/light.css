@@ -1,0 +1,19 @@
+html:not([data-dark-mode]),
+body:not([data-dark-mode]),
+html[data-dark-mode="false"],
+body[data-dark-mode="false"] {
+  --sidebar-bg: #ffffff;
+  --content-bg-light: #f5f8ff;
+  --app-bg-light: radial-gradient(
+    circle at 40% 0%,
+    #eaf2ff 0%,
+    #8fb6ff 35%,
+    #5a8ae3 100%
+  );
+}
+
+/* Ant Design overrides (light) */
+.ant-card,
+.ant-descriptions {
+  background: #ffffff;
+}

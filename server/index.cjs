@@ -4,5 +4,5 @@ const { port } = require('./config/env.cjs')
 
 // 启动监听
 const server = app.listen(port, () => {
-  console.log(`server listening on :${port}`)
+  console.log(`服务已启动，端口：${port}`)
 })

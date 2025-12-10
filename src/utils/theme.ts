@@ -8,7 +8,7 @@ export const getCssVar = (name: string, fallback = '') => {
 }
 
 export const initThemeVars = () => {
-  const primary = getCssVar('--el-color-primary', '#409eff')
+  const primary = getCssVar('--primary-color', '#1677ff')
   const start = `color-mix(in srgb, ${primary}, white 20%)`
   const end = `color-mix(in srgb, ${primary}, #8b5cf6 20%)`
   const activeBg = `color-mix(in srgb, ${primary}, white 85%)`
@@ -21,6 +21,6 @@ export const initThemeVars = () => {
 }
 
 export const setPrimaryColor = (color: string) => {
-  setCssVar('--el-color-primary', color)
+  setCssVar('--primary-color', color)
   initThemeVars()
 }

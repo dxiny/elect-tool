@@ -1,78 +1,207 @@
 <template>
-  <div class="menu">
-    <el-menu :default-active="route.path" class="el-menu-vertical" router>
-      <el-menu-item v-for="item in menu" :key="item.id" :index="item.path">
-        <el-icon class="menu-icon" :size="22">
-          <component :is="item.icon" />
-        </el-icon>
-        <span class="menu-text">{{ item.title }}</span>
-      </el-menu-item>
-    </el-menu>
+  <div class="sidebar-container">
+    <!-- logo+气泡 -->
+    <LogoRadialMenu />
+
+    <!-- 菜单 -->
+    <div class="menu-area">
+      <div
+        v-for="item in menu"
+        :key="item.path"
+        class="menu-item"
+        :class="{ active: isActive(item.path) }"
+        @click="handleMenuClick(item.path)"
+      >
+        <component :is="item.icon" class="menu-icon" />
+      </div>
+    </div>
+
+    <!-- 头像 -->
+    <div class="bottom-area">
+      <div class="avatar-wrapper" @click="toProfile" title="个人资料">
+        <a-avatar :size="36" :src="avatar">
+          <template #icon><UserOutlined /></template>
+        </a-avatar>
+      </div>
+    </div>
   </div>
 </template>
 
 <script setup lang="ts">
 import { useMenuStore } from "@/stores/menu";
 import { storeToRefs } from "pinia";
-import { useRoute } from "vue-router";
+import { useRoute, useRouter } from "vue-router";
+import { computed, ref } from "vue";
+import LogoRadialMenu from "@/components/LogoRadialMenu.vue";
+import { UserOutlined } from "@ant-design/icons-vue";
+import avatar from "@/assets/images/avatar.jpg";
 
 const store = useMenuStore();
 const { menu } = storeToRefs(store);
 const route = useRoute();
+const router = useRouter();
+
+const isActive = (path: string) => {
+  if (path === "/" && route.path === "/") return true;
+  if (path !== "/" && route.path.startsWith(path)) return true;
+  return false;
+};
+
+const handleMenuClick = (path: string) => {
+  router.push(path);
+};
+
+const toProfile = () => {
+  router.push("/profile");
+};
 </script>
 
 <style scoped>
-.menu {
+.sidebar-container {
   height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 16px 0;
+  width: 80px;
+  background: var(--sidebar-bg);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+  -webkit-app-region: drag;
 }
-.el-menu-vertical {
-  width: 66px;
-  border-right: none;
-  height: 100%;
-  padding-top: 8px;
-  background: transparent;
-}
-.el-menu-vertical :deep(.el-menu-item) {
-  height: 50px;
-  margin: 0 5px;
-  margin-bottom: 15px;
-  border-radius: 10px;
+
+.menu-area {
+  flex: 1;
+  width: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 6px;
-  color: var(--menu-text-default);
+  gap: 16px;
+  overflow-y: auto;
+}
 
-  &:nth-of-type(1) {
-    margin-top: 10px;
-  }
-}
-.el-menu-vertical :deep(.el-menu-item span) {
-  line-height: 1;
-  margin: 0;
-  display: block;
-}
-.el-menu-vertical :deep(.el-menu-item .el-icon) {
-  margin: 0;
-}
-.el-menu-vertical :deep(.el-menu-item:hover) {
-  background-color: transparent !important;
-}
-.el-menu-vertical :deep(.el-menu-item.is-active) {
-  /* background: var(--sidebar-active-bg); */
-  color: var(--sidebar-active-text);
-}
-.menu-icon {
-  line-height: 1;
+.menu-item {
+  width: 100%;
+  height: 44px;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
   color: var(--menu-icon-default);
+  transition: color 0.2s ease;
+  -webkit-app-region: no-drag;
 }
-.menu-text {
-  font-size: 12px;
-  color: var(--menu-text-default);
+
+.menu-item:hover {
+  color: color-mix(in srgb, var(--brand-primary), #000 15%);
 }
-.el-menu-vertical :deep(.el-menu-item.is-active .el-icon),
-.el-menu-vertical :deep(.el-menu-item.is-active .menu-text) {
-  color: var(--sidebar-active-text);
+
+.menu-item.active {
+  color: var(--brand-primary);
+}
+.menu-item.active::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 3px;
+  height: 60%;
+  border-radius: 3px;
+  background: var(--brand-primary);
+}
+
+.menu-icon {
+  font-size: 22px;
+}
+
+.bottom-area {
+  margin-top: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  -webkit-app-region: no-drag;
+}
+
+.avatar-wrapper {
+  cursor: pointer;
+  transition: transform 0.2s;
+  border: 2px solid transparent;
+  border-radius: 50%;
+  -webkit-app-region: no-drag;
+}
+
+.avatar-wrapper:hover {
+  transform: scale(1.05);
+  /* border-color: var(--brand-primary); */
+}
+
+.theme-wrapper {
+  transform: scale(0.6);
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  -webkit-app-region: no-drag;
+  background: #ffffff;
+  padding: 6px;
+  border-radius: 16px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+}
+
+.window-controls {
+  display: flex;
+  gap: 8px;
+  padding: 4px;
+}
+
+.window-btn {
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  cursor: pointer;
+  color: #666;
+  transition: all 0.2s;
+}
+
+.window-btn:hover {
+  background: #eee;
+  color: #333;
+}
+
+.window-btn.close:hover {
+  background: #ff4d4f;
+  color: white;
+}
+</style>
+
+<style>
+.window-controls-popover .ant-popover-inner {
+  padding: 8px;
+  border-radius: 8px;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+}
+
+[data-dark-mode="true"] .window-controls-popover .ant-popover-inner {
+  background: #1f2937;
+  border: 1px solid #374151;
+}
+
+[data-dark-mode="true"] .window-btn {
+  color: #9ca3af;
+}
+
+[data-dark-mode="true"] .window-btn:hover {
+  background: #374151;
+  color: #e5e7eb;
+}
+
+[data-dark-mode="true"] .window-btn.close:hover {
+  background: #ef4444;
 }
 </style>

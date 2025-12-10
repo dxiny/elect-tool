@@ -1,0 +1,23 @@
+html[data-dark-mode="true"],
+body[data-dark-mode="true"] {
+  --sidebar-bg: #25233a;
+  --content-bg-dark: #0b0f1f;
+  --menu-text-default: #a7b0c0;
+  --menu-icon-default: #a7b0c0;
+  --app-bg-dark: radial-gradient(
+    circle at 80% 50%,
+    rgba(123, 74, 255, 0.35) 0%,
+    rgba(36, 16, 72, 0.6) 30%,
+    #0a0d18 75%,
+    #070a12 100%
+  );
+}
+
+/* Ant Design overrides (dark) */
+html[data-dark-mode="true"] .ant-card,
+body[data-dark-mode="true"] .ant-card {
+  background: #0f1428;
+}
+html[data-dark-mode="true"] .ant-descriptions {
+  background: #0f1428;
+}

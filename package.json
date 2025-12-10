@@ -17,10 +17,10 @@
     "server": "node server/index.cjs"
   },
   "dependencies": {
-    "@element-plus/icons-vue": "^2.3.2",
+    "@ant-design/icons-vue": "^7.0.1",
+    "ant-design-vue": "^4.2.6",
     "better-sqlite3": "^9.4.0",
     "cors": "^2.8.5",
-    "element-plus": "^2.11.8",
     "express": "^4.19.2",
     "pinia": "^2.2.0",
     "vue": "^3.4.0",

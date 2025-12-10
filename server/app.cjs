@@ -16,6 +16,7 @@ app.use('/api/projects', require('./routes/projects.cjs'))
 app.use('/api/assets', require('./routes/assets.cjs'))
 app.use('/api/scenes', require('./routes/scenes.cjs'))
 app.use('/api/notes', require('./routes/notes.cjs'))
+app.use('/api/profile', require('./routes/profile.cjs'))
 
 // 全局错误处理中间件
 app.use(errorHandler)

@@ -51,7 +51,7 @@ async function waitForPort(port) {
     || (await waitForPort(4001))
     || (await waitForPort(3000))
   if (!port) {
-    console.error('Dev server not available within timeout')
+    console.error('开发服务在超时时间内未就绪')
     clean()
     process.exit(1)
   }

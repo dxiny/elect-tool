@@ -1,41 +1,39 @@
 import { createRouter, createWebHashHistory } from 'vue-router'
 import Home from '@/pages/home/index.vue'
-import Markdown from '@/pages/editor/Markdown.vue'
-import Charts from '@/pages/charts/Index.vue'
 import About from '@/pages/about/Index.vue'
 import Profile from '@/pages/profile/Index.vue'
 import AIIndex from '@/pages/ai/Index.vue'
-import JSONIndex from '@/pages/json/Index.vue'
 
 const routes = [
   {
     path: '/',
     name: 'Home',
     component: Home,
-    meta: { title: '首页' }
+    meta: { title: '主页' }
   },
   {
     path: '/ai',
-    name: 'AIIndex',
+    name: 'AI',
     component: AIIndex,
-    meta: { title: 'AI模型' }
+    meta: { title: 'AI' }
   },
   {
-    path: '/json',
-    name: 'JSONIndex',
-    component: JSONIndex,
-    meta: { title: 'JSON转换' }
+    path: '/gis',
+    name: 'GIS',
+    component: Home, // Placeholder
+    meta: { title: 'GIS' }
   },
   {
-    path: '/editor/markdown',
-    name: 'Markdown',
-    component: Markdown,
-    meta: { title: 'markdown编辑器' }
+    path: '/3d',
+    name: '3D',
+    component: Home, // Placeholder
+    meta: { title: '3D' }
   },
   {
-    path: '/charts',
-    name: 'Charts',
-    component: Charts
+    path: '/tools',
+    name: 'Tools',
+    component: Home, // Placeholder
+    meta: { title: '工具' }
   },
   {
     path: '/profile',

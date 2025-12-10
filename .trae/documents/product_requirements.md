@@ -1,67 +1,288 @@
-## 1. Product Overview
-A minimal web application built with React and Supabase providing user authentication and basic data management capabilities.
-- Target users: Developers and small teams needing a quick-start full-stack solution
-- Core value: Rapid prototyping with built-in authentication and database
+# ElectTool 项目需求与规划文档
 
-## 2. Core Features
+## 1. 项目概述
 
-### 2.1 User Roles
-| Role | Registration Method | Core Permissions |
-|------|---------------------|------------------|
-| User | Email registration | Create/read own data, basic app features |
-| Admin | Manual assignment | Full data access, user management |
+ElectTool 是一个基于 Electron + Vue 3 的跨平台桌面工具应用，集成了 GIS 地图、3D 模型查看与 AI 辅助等功能。项目旨在通过实际业务场景（如离线地图、模型管理、智能对话）提升个人技术栈，覆盖从前端开发到桌面应用工程化的全链路。
 
-### 2.2 Feature Module
-Our application consists of the following main pages:
-1. **Home page**: Welcome section, navigation menu, feature overview
-2. **Login page**: User authentication form, registration link
-3. **Dashboard page**: User data display, profile management, logout
+**架构原则**：
 
-### 2.3 Page Details
-| Page Name | Module Name | Feature description |
-|-----------|-------------|---------------------|
-| Home page | Welcome section | Display app title, brief description, and call-to-action buttons for login/register |
-| Home page | Navigation | Top navigation bar with brand logo and auth status indicator |
-| Login page | Auth form | Email/password input fields with validation and submit button |
-| Login page | Registration link | Link to registration form for new users |
-| Dashboard page | User profile | Display current user email and account creation date |
-| Dashboard page | Logout button | Secure logout functionality redirecting to home page |
+* **重前端，轻后端**：作为个人工具，核心逻辑（地图渲染、模型交互、状态管理）尽量在前端（渲染进程）实现。
 
-## 3. Core Process
-**User Authentication Flow:**
-1. User visits home page and clicks login button
-2. User enters credentials on login page
-3. System authenticates via Supabase Auth
-4. Successful login redirects to dashboard
-5. User can logout from dashboard to return home
+* **后端服务化**：Electron 主进程（Node.js）仅作为“本地微服务”，负责文件系统访问、SQLite 数据库操作和系统级 API 调用（托盘、通知）。
 
-```mermaid
-graph TD
-  A[Home Page] --> B[Login Page]
-  B --> C{Authentication}
-  C -->|Success| D[Dashboard]
-  C -->|Failure| B
-  D --> E[Logout]
-  E --> A
-```
+* **云端辅助**：云服务仅用于轻量级配置同步或 API 代理，不承担核心计算或大数据存储，确保本地离线可用性。
 
-## 4. User Interface Design
-### 4.1 Design Style
-- Primary color: #3B82F6 (blue-500)
-- Secondary color: #10B981 (emerald-500)
-- Button style: Rounded corners with hover effects
-- Font: System-ui, 16px base size
-- Layout: Centered content with max-width container
-- Icons: Lucide React icons for consistency
+## 2. 功能清单
 
-### 4.2 Page Design Overview
-| Page Name | Module Name | UI Elements |
-|-----------|-------------|-------------|
-| Home page | Welcome section | Centered hero with gradient background, large heading, description text, two primary buttons |
-| Home page | Navigation | Fixed top bar with logo on left, auth buttons on right, subtle shadow |
-| Login page | Auth form | Card-based form with input fields, submit button, link to register below |
-| Dashboard page | User profile | Clean card displaying user info with avatar placeholder, creation date |
-| Dashboard page | Logout button | Secondary button in top-right of dashboard card |
+### 2.1 核心模块 (Core Modules)
 
-### 4.3 Responsiveness
-Desktop-first design approach with mobile responsiveness. Layout adapts to screen sizes with responsive grid and flexible containers.
+#### GIS 模块 (Geographic Information System)
+
+* **目的**：提供离线地图查看、空间数据管理与分析能力。
+
+* **功能**：
+
+  * **离线地图加载**：支持加载本地 MBTiles 或缓存的瓦片数据，脱离网络使用。
+
+  * **矢量数据管理**：导入/导出 GeoJSON、KML、Shapefile 格式数据。
+
+  * **图层控制**：多图层叠加、透明度调整、显隐控制、样式自定义（颜色、线宽）。
+
+  * **空间分析**：缓冲区分析（Buffer）、测量（距离/面积）、路径规划（基于本地路网）。
+
+  * **生活应用**：
+
+    * **运动轨迹分析**：导入 GPX 轨迹，生成配速/海拔图表，叠加地图展示。
+
+    * **生活圈评估**：基于等时圈（Isochrone）分析房源周边的交通便利度。
+
+* **技术栈**：MapLibre GL JS (推荐) 或 OpenLayers, Turf.js (空间分析)。
+
+#### 3D 模块 (3D Visualization)
+
+* **目的**：提供本地 3D 模型查看、检查与简单规划能力。
+
+* **功能**：
+
+  * **模型查看器**：支持 glTF/GLB, OBJ, STL, FBX 等常见格式的拖拽加载。
+
+  * **场景交互**：轨道控制器（旋转/缩放/平移）、第一人称漫游。
+
+  * **模型检查**：查看网格信息（面数/顶点数）、线框模式、法线检查。
+
+  * **格式转换**：利用本地算力将 OBJ/STL 转换为 Web 友好的 GLB 格式。
+
+  * **生活应用**：
+
+    * **家居规划**：导入户型模型，放置家具模型（GLB），进行布局推演与尺寸测量。
+
+    * **3D 打印预览**：检查 STL 模型是否闭合、尺寸是否超出打印机范围。
+
+* **技术栈**：Babylon.js (推荐，引擎功能更全) 或 Three.js。
+
+#### AI 模块 (Artificial Intelligence)
+
+* **目的**：集成大模型能力，提供智能对话与本地知识库支持。
+
+* **功能**：
+
+  * **多模型对话**：支持配置 OpenAI 格式接口（ChatGPT, DeepSeek, Claude 等），流式响应。
+
+  * **历史记录管理**：对话记录本地持久化（SQLite），支持搜索与回溯。
+
+  * **本地知识库 (RAG)**：
+
+    * 导入 PDF/Markdown 文档。
+
+    * 本地向量化（使用 Transformers.js 或本地运行的 Embedding 模型）。
+
+    * 基于语义检索的问答增强。
+
+  * **工具调用**：AI 可调用应用内功能（如“帮我打开某个地图文件”、“总结这段代码”）。
+
+* **技术栈**：LangChain.js (可选), Transformers.js, SQLite (向量存储)。
+
+### 2.2 辅助功能 (Utility Features)
+
+* **个人中心**：
+
+  * 用户配置：头像更换（本地存储/云端同步）、昵称修改。
+
+  * 数据同步：配置云端存储（如 S3/WebDAV）进行数据备份。
+
+* **备忘录**：
+
+  * 富文本编辑：支持 Markdown/HTML 混合编辑，所见即所得。
+
+  * 标签管理：按标签分类笔记。
+
+  * 全文检索：基于 SQLite FTS 的快速搜索。
+
+* **系统集成**：
+
+  * 系统托盘：后台运行、快速唤起。
+
+  * 快捷键：全局快捷键唤起 AI 对话框。
+
+  * 通知：任务完成（如模型转换结束）的系统通知。
+
+## 3. 可行性分析与成本 (Feasibility & Cost)
+
+### 3.1 GIS 模块
+
+* **技术栈**：MapLibre GL JS（渲染） + Turf.js（分析）。
+
+* **前端主导**：所有地图交互、样式渲染、甚至简单的空间分析（Buffer/Distance）均在前端运行。后端仅负责读取本地 GIS 文件流。
+
+* **成本**：
+
+  * **渲染引擎**：开源免费 (MapLibre GL JS)。
+
+  * **底图数据**：
+
+    * **免费/开源**：OpenStreetMap (OSM) 瓦片，Carto (免费额度)，Stamen Design。
+
+    * **自托管**：下载 OpenMapTiles 矢量瓦片包（免费/付费均有），本地 serve，完全免费且离线。
+
+  * **API 服务**：Mapbox/Google Maps（付费，个人项目不推荐，易超额）。
+
+### 3.2 3D 模块
+
+* **技术栈**：Babylon.js（引擎） + glTF-Transform（转换）。
+
+* **前端主导**：3D 场景完全在 Canvas 中渲染。模型解析与交互逻辑均在前端。后端仅需支持大文件流式读取。
+
+* **成本**：
+
+  * **引擎**：开源免费 (Apache 2.0)。
+
+  * **模型资源**：Sketchfab (有大量免费 CC0 模型), Poly Haven (免费 HDR/纹理)。
+
+### 3.3 AI 模块
+
+* **技术栈**：OpenAI SDK (前端调用) + SQLite (本地存储)。
+
+* **前端主导**：对话逻辑、上下文拼接在前端完成。
+
+* **成本建议**：
+
+  * **首选（高性价比/免费）**：
+
+    * **DeepSeek R1**：当前推理与编码能力极强，且价格极低（甚至有免费 API 额度），非常适合个人开发者。
+
+    * **OpenAI o4-mini / gpt-4o-mini**：价格低廉，速度快，适合日常对话。
+
+  * **进阶（付费）**：
+
+    * **Claude 3.5 Sonnet / 3.7 Sonnet**：逻辑与编码能力顶尖，适合复杂任务，但价格较贵。
+
+    * **OpenAI o3**：推理能力强，适合数学/科研，价格昂贵。
+
+  * **本地运行（免费，吃硬件）**：
+
+    * **Ollama + Llama 3 / DeepSeek-R1-Distill**：完全免费，隐私安全，但需要较好的 CPU/GPU (推荐 16GB+ 内存，Mac M系列或 NVIDIA 显卡)。
+
+## 4. 系统容量与优化 (Capacity & Optimization)
+
+### 4.1 当前容量评估
+
+* **本地存储 (SQLite)**：
+
+  * **容量**：SQLite 单文件支持 TB 级数据，但在桌面应用中，建议控制在 5GB 以内以保持启动速度和备份便利性。
+
+  * **性能**：百万级行数据的简单查询毫秒级响应；全文检索（FTS5）在十万级文档下依然流畅。
+
+* **云端服务**：
+
+  * 当前主要作为 API 代理或轻量配置同步，瓶颈取决于服务器带宽与数据库（如 MySQL/PostgreSQL）规格。
+
+  * 若涉及大文件（地图瓦片/模型）同步，建议使用对象存储（OSS/S3）而非直接存数据库。
+
+### 4.2 优化策略 (后期)
+
+* **大数据量优化**：
+
+  * **GIS**：使用矢量瓦片（Vector Tiles）替代 GeoJSON 全量加载；前端启用 WebWorker 进行数据解析。
+
+  * **3D**：使用 LOD (Level of Detail) 技术，根据距离加载不同精度的模型；使用 Draco 压缩减少模型体积。
+
+  * **数据库**：SQLite 分库分表（按年份或项目）；关键字段建立索引；耗时查询移至 Worker 线程或 Node.js 子进程。
+
+* **架构优化**：
+
+  * **Electron**：启用 Context Isolation（已做）；耗时计算任务（如模型转换、空间分析）放入 Hidden BrowserWindow 或 Node.js Child Process，避免阻塞 UI 线程。
+
+## 5. 成长计划 (Growth Plan)
+
+### 第一阶段：基础夯实 (0-1 月)
+
+* **目标**：完成 GIS/3D/AI 三个模块的基础 MVP (Minimum Viable Product)。
+
+* **行动**：
+
+  * 熟悉 Electron 的 IPC 通信与文件系统操作（fs）。
+
+  * 学习 MapLibre GL JS 的 Layer/Source 概念，跑通地图加载。
+
+  * 学习 Babylon.js 基本场景搭建，跑通模型加载。
+
+  * 实现 SQLite 的基础 CRUD 封装。
+
+* **产出**：一个能看地图、看模型、能对话的桌面工具雏形。
+
+### 第二阶段：场景深化 (1-3 月)
+
+* **目标**：结合生活场景，开发具有实用价值的功能。
+
+* **行动**：
+
+  * **GIS**：实现 GPX 轨迹分析功能，解决坐标系转换与数据可视化问题。
+
+  * **3D**：开发家居摆放功能，学习 3D 空间中的射线检测（Raycasting）与变换矩阵。
+
+  * **AI**：实现本地 RAG，学习文本分块（Chunking）与向量相似度计算。
+
+* **产出**：跑步分析工具、家居规划工具、个人知识库助手。
+
+### 第三阶段：工程化与架构 (3-6 月)
+
+* **目标**：提升软件质量，优化性能，探索底层原理。
+
+* **行动**：
+
+  * **性能优化**：分析内存泄漏，优化首屏加载速度，引入 WebWorker。
+
+  * **底层探索**：阅读 WebGL 原理，了解 Shader 编程；深入 SQLite 索引优化。
+
+  * **自动化与发布**：完善 GitHub Actions 流水线，实现多平台自动构建与 Release 发布。
+
+* **产出**：一个高性能、高可用、代码优雅的开源桌面项目。
+
+## 6. 数据采集指南 (Data Acquisition Guide)
+
+### 6.1 GIS 数据采集
+
+* **运动轨迹 (GPX)**：
+
+  * **推荐工具**：
+
+    * **OsmAnd (Android/iOS)**：开源免费，支持离线地图，可直接录制轨迹并导出 GPX。
+
+    * **GPX Tracker (iOS)** / **Geo Tracker (Android)**：专注于记录轨迹的极简工具。
+
+  * **获取方式**：在应用中开启“录制” -> 运动结束后保存 -> 导出为 GPX 文件 -> 发送到电脑。
+
+* **公开地理数据**：
+
+  * **OpenStreetMap (OSM)**：可导出指定区域的建筑物、道路矢量数据。
+
+  * **Natural Earth**：提供全球范围的基础地理数据（国界、海岸线）。
+
+### 6.2 3D 模型获取
+
+* **现成模型下载**：
+
+  * **Sketchfab**：全球最大的 3D 模型库，筛选 "Downloadable" + "CC0" (免费商用) 即可找到大量高质量模型（家具、车辆、植物）。
+
+  * **Poly Haven**：提供高质量免费的 HDR 环境贴图和纹理材质，用于提升渲染真实感。
+
+* **自己扫描 (Photogrammetry)**：
+
+  * **原理**：围绕物体拍摄多张照片，通过软件生成 3D 模型。
+
+  * **推荐工具**：
+
+    * **Polycam (iOS/Android)**：手机端最强扫描 App，支持 LiDAR（iPhone Pro 系列）和照片建模，免费版可导出 glTF。
+
+    * **RealityScan** (Epic Games 出品)：免费，生成质量高，直接导出。
+
+  * **应用场景**：扫描自己的房间生成户型模型；扫描自己的手办或家具。
+
+## 7. 附录：技术选型对比
+
+| 模块      | 方案 A                    | 方案 B           | 推荐             | 理由                                  |
+| :------ | :---------------------- | :------------- | :------------- | :---------------------------------- |
+| **GIS** | MapLibre GL JS          | OpenLayers     | **MapLibre**   | 渲染性能更强，矢量瓦片支持更好，适合现代 WebGIS。        |
+| **3D**  | Babylon.js              | Three.js       | **Babylon.js** | 引擎化程度高，API 设计更面向对象，自带调试工具，适合做工具类应用。 |
+| **DB**  | SQLite (better-sqlite3) | LevelDB / RxDB | **SQLite**     | SQL 语言通用性强，查询能力丰富，生态成熟。             |
+

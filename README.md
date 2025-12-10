@@ -1,19 +1,20 @@
-# Elect Tool - 你的全能桌面助手
+# Elect Tool
 
-Elect Tool 是一个基于 Vue 3 + Element Plus + Electron 的现代化桌面应用，集成了 AI 助手、富文本笔记、知识库管理和 3D 模型预览等功能。
+Elect Tool 是一个基于 Vue 3 + Ant Design Vue + Electron 的现代化桌面应用，集成了 GIS 地图、3D 模型查看与 AI 辅助等功能。项目旨在通过实际业务场景（如离线地图、模型管理、智能对话）提升个人技术栈，覆盖从前端开发到桌面应用工程化的全链路。
 
 它支持**双模式运行**：既可以作为离线单机应用使用（数据存本地），也可以作为客户端连接远程服务器（数据云端同步）。
 
 ## 1. 主要功能
 
-*   **🤖 AI 智能助手**：支持多会话管理、上下文对话、Prompt 模板。
-*   **📝 富文本备忘录**：支持 Markdown/富文本编辑、标签归档、全文搜索。
-*   **📚 知识库管理**：支持文档导入、切片管理、RAG（检索增强生成）辅助。
-*   **🎨 3D 模型工作流**：支持 GLB/FBX/OBJ 模型预览、元数据管理、场景构建。
+*   **🗺️ GIS 地图引擎**：离线地图加载、矢量数据 (GeoJSON) 管理、空间分析、运动轨迹分析。
+*   **🎲 3D 可视化**：GLB/OBJ 模型查看、场景交互、模型检查与格式转换。
+*   **🤖 AI 智能助手**：支持多模型对话 (OpenAI/DeepSeek)、本地知识库 (RAG)、历史记录管理。
+*   **📝 辅助工具**：富文本备忘录、个人中心配置、系统集成（托盘/通知）。
 
 ### 技术栈
 
-*   **前端**：`Vue 3`、`TypeScript`、`Pinia`、`Vue Router`、`Element Plus`
+*   **前端**：`Vue 3`、`TypeScript`、`Pinia`、`Vue Router`、`Ant Design Vue`
+*   **可视化**：`MapLibre GL JS` (GIS), `Babylon.js` (3D)
 *   **构建工具**：`Vite`
 *   **桌面框架**：`Electron`
 *   **数据库**：`SQLite` (better-sqlite3)
@@ -25,78 +26,86 @@ Elect Tool 是一个基于 Vue 3 + Element Plus + Electron 的现代化桌面应
 
 ```
 d:\DXY\ElectTool\
-├── .github/                # GitHub 配置
-│   └── workflows/          # CI/CD 流水线配置 (GitHub Actions)
-│       └── build.yml       # 自动打包脚本 (Tag 触发)
+├── .github/                # GitHub 配置 (CI/CD)
 ├── .trae/                  # Trae IDE 专属配置
-├── build/                  # 打包资源目录
-│   ├── icon.ico            # Windows 应用图标
-│   └── icon.icns           # macOS 应用图标
-├── dist/                   # 前端构建产物 (npm run build 生成)
+│   └── documents/          # 项目文档 (PRD, 技术方案)
+├── build/                  # 打包资源目录 (图标等)
+├── dist/                   # 前端构建产物
 ├── electron/               # Electron 主进程代码
-│   ├── main.cjs            # 主进程入口 (窗口创建、IPC通信、本地数据库)
-│   └── preload.cjs         # 预加载脚本 (安全暴露 API 给渲染进程)
-├── scripts/                # 工具脚本
-│   └── dev-electron.cjs    # 开发环境启动脚本
-├── server/                 # 后端服务代码 (用于远程模式)
-│   ├── config/             # 环境配置
-│   ├── controllers/        # 控制器 (处理请求)
-│   ├── db/                 # 数据库连接
-│   ├── routes/             # API 路由定义
-│   ├── services/           # 业务逻辑层
-│   └── index.cjs           # 服务入口文件
+│   ├── main.cjs            # 主进程入口 (窗口, IPC, 数据库)
+│   └── preload.cjs         # 预加载脚本 (安全 API)
+├── server/                 # 后端服务代码 (远程模式)
 ├── src/                    # 前端渲染进程代码 (Vue)
 │   ├── components/         # 公共组件
-│   ├── pages/              # 页面视图 (AI, Notes, Config 等)
-│   ├── services/           # 前端服务层 (统一调用 backend.ts)
+│   ├── pages/              # 页面视图 (AI, Map, 3D 等)
+│   ├── services/           # 前端服务层
 │   ├── stores/             # Pinia 状态管理
 │   ├── utils/              # 工具函数
-│   ├── App.vue             # 根组件
 │   └── main.ts             # 入口文件
-├── BUILD_GUIDE.md          # 打包发布指南 (详细版)
-├── DEPLOY.md               # 服务器部署指南 (详细版)
-└── package.json            # 项目依赖与脚本配置
+├── BUILD_GUIDE.md          # 打包发布指南
+├── DEPLOY.md               # 服务器部署指南
+└── package.json            # 项目依赖配置
 ```
 
 ---
 
-## 3. 整体架构
+## 3. 项目规划与需求 (PRD)
 
-本项目采用了**灵活的双架构设计**，通过 `src/services/backend.ts` 进行统一封装，前端业务代码无需感知底层差异。
+> 详细的规划文档请见：[`product_requirements.md`](./.trae/documents/product_requirements.md)
 
-### 模式 A：本地离线模式 (默认)
-*   **架构**：渲染进程 (Vue) <-> IPC 通信 <-> 主进程 (Electron) <-> 本地 SQLite
-*   **适用场景**：个人使用，数据隐私要求高，无网络环境。
-*   **数据存储**：用户的 `AppData` 目录。
+### 3.1 核心模块规划
 
-### 模式 B：远程客户端模式
-*   **架构**：渲染进程 (Vue) <-> HTTP 请求 <-> 远程 Node 服务器 <-> 服务器 SQLite
-*   **适用场景**：多端同步，团队协作，数据云端备份。
-*   **切换方式**：在设置页面配置 `API Base URL` 即可无缝切换。
+#### GIS 模块 (Geographic Information System)
+*   **目的**：提供离线地图查看、空间数据管理与分析能力。
+*   **功能**：离线地图加载、矢量数据管理、图层控制、空间分析、运动轨迹分析、生活圈评估。
+*   **技术栈**：MapLibre GL JS + Turf.js。
+
+#### 3D 模块 (3D Visualization)
+*   **目的**：提供本地 3D 模型查看、检查与简单规划能力。
+*   **功能**：模型查看器、场景交互、模型检查、格式转换、家居规划、3D 打印预览。
+*   **技术栈**：Babylon.js + glTF-Transform。
+
+#### AI 模块 (Artificial Intelligence)
+*   **目的**：集成大模型能力，提供智能对话与本地知识库支持。
+*   **功能**：多模型对话 (OpenAI/DeepSeek)、历史记录管理、本地知识库 (RAG)、工具调用。
+*   **技术栈**：OpenAI SDK + SQLite。
+
+### 3.2 架构原则
+*   **重前端，轻后端**：核心逻辑（地图渲染、模型交互、状态管理）在前端实现。
+*   **后端服务化**：Electron 主进程仅作为“本地微服务”，负责文件/数据库操作。
+*   **云端辅助**：仅用于轻量配置同步，确保离线可用性。
 
 ---
 
-## 4. 服务部署/应用打包
+## 4. 数据采集指南
 
-为了保持文档清晰，特定领域的详细操作请参考独立文档：
+### GIS 数据
+*   **工具**：OsmAnd (Android/iOS), GPX Tracker (iOS)。
+*   **方式**：使用 App 录制轨迹 -> 导出 GPX -> 导入本软件。
+
+### 3D 模型
+*   **下载**：Sketchfab (筛选 CC0 免费模型)。
+*   **自制**：Polycam (手机扫描生成 glTF)。
+
+---
+
+## 5. 服务部署/应用打包
 
 *   **想把代码部署到云服务器？**
     👉 请阅读 **[`DEPLOY.md`](./DEPLOY.md)**
-    *   *涵盖：服务器环境搭建、Nginx 配置、PM2 进程守护、HTTPS 配置等。*
 
 *   **想打包成安装包发给别人？**
     👉 请阅读 **[`BUILD_GUIDE.md`](./BUILD_GUIDE.md)**
-    *   *涵盖：GitHub Actions 自动构建流程、版本号管理、安装包下载指引。*
 
 ---
 
-## 5. 本地开发指南
+## 6. 本地开发指南
 
 ### 环境准备
 *   Node.js (推荐 v18 或 v20)
 *   Git
 
-### 启动前端 + Electron (桌面开发)
+### 启动开发环境
 ```powershell
 # 1. 安装依赖
 npm install
@@ -105,17 +114,8 @@ npm install
 npm run dev:app
 ```
 
-### 启动独立后端 (服务端开发)
-如果你需要调试远程模式的后端接口：
+### 启动独立后端 (可选)
 ```powershell
 # 启动 Express 服务器 (默认端口 3000)
 npm run server
 ```
-
----
-
-## 6. 功能实现指南
-
-### 📝 笔记系统
-*   **实现逻辑**：基于 SQLite 的 CRUD 操作。
-*   **特色**：支持按时间排序、关键词搜索。如果在远程模式下，数据会自动存储在服务器数据库中。

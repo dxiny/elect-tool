@@ -1,0 +1,11 @@
+:root {
+  --brand-primary: #7a66ff;
+  --brand-gradient-start: #7a66ff;
+  --brand-gradient-end: #6f59ff;
+
+  --menu-text-default: #b5b6b8;
+  --menu-icon-default: var(--menu-text-default);
+
+  --sidebar-active-bg: #ffffff;
+  --sidebar-active-text: var(--brand-primary);
+}
