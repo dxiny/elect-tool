@@ -1,8 +1,8 @@
 import { createRouter, createWebHashHistory } from 'vue-router'
 import Home from '@/pages/home/index.vue'
-import About from '@/pages/about/Index.vue'
-import Profile from '@/pages/profile/Index.vue'
 import AIIndex from '@/pages/ai/Index.vue'
+import GisIndex from '@/pages/gis/Index.vue'
+import Profile from '@/pages/profile/Index.vue'
 
 const routes = [
   {
@@ -20,19 +20,19 @@ const routes = [
   {
     path: '/gis',
     name: 'GIS',
-    component: () => import('@/pages/gis/Index.vue'),
+    component: GisIndex,
     meta: { title: 'GIS', noPadding: true }
   },
   {
     path: '/3d',
     name: '3D',
-    component: Home, // Placeholder
+    component: Home,
     meta: { title: '3D' }
   },
   {
     path: '/tools',
     name: 'Tools',
-    component: Home, // Placeholder
+    component: Home,
     meta: { title: '工具' }
   },
   {
@@ -40,11 +40,6 @@ const routes = [
     name: 'Profile',
     component: Profile,
     meta: { title: '个人资料' }
-  },
-  {
-    path: '/about',
-    name: 'About',
-    component: About
   }
 ]
 
