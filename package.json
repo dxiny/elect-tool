@@ -1,7 +1,7 @@
 {
   "name": "elect-tool",
   "private": true,
-  "version": "1.0.9",
+  "version": "1.1.0",
   "author": "ElectTool",
   "description": "初始化项目",
   "productName": "ElectTool",
