@@ -19,7 +19,7 @@
 
     <a-row :gutter="12" style="margin-top: 12px">
       <a-col :span="24">
-        <a-card :bordered="false" class="chat-container-card">
+        <a-card class="chat-container-card">
           <div class="chat-list" ref="listEl">
             <a-space direction="vertical" style="width: 100%">
               <a-card
@@ -136,7 +136,7 @@ const clear = () => {
 
 <style scoped>
 .chat-container-card {
-  border: 1px solid #f0f0f0;
+  /* Border handled by a-card global style */
 }
 .chat-list {
   height: 58vh;
@@ -150,8 +150,8 @@ const clear = () => {
   border-radius: 8px;
 }
 .assistant .content {
-  background: #f5f5f5;
-  color: #333;
+  background: var(--chat-assistant-bg);
+  color: var(--chat-assistant-text);
   padding: 8px 10px;
   border-radius: 8px;
 }

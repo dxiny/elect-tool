@@ -18,11 +18,14 @@
   },
   "dependencies": {
     "@ant-design/icons-vue": "^7.0.1",
+    "@types/three": "^0.182.0",
     "ant-design-vue": "^4.2.6",
     "better-sqlite3": "^9.4.0",
     "cors": "^2.8.5",
+    "earth-flyline": "^1.6.4",
     "express": "^4.19.2",
     "pinia": "^2.2.0",
+    "three": "^0.182.0",
     "vue": "^3.4.0",
     "vue-i18n": "^9.0.0",
     "vue-router": "^4.4.0"

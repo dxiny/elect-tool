@@ -4,20 +4,141 @@ body[data-dark-mode="true"] {
   --content-bg-dark: #0b0f1f;
   --menu-text-default: #a7b0c0;
   --menu-icon-default: #a7b0c0;
-  --app-bg-dark: radial-gradient(
-    circle at 80% 50%,
-    rgba(123, 74, 255, 0.35) 0%,
-    rgba(36, 16, 72, 0.6) 30%,
-    #0a0d18 75%,
-    #070a12 100%
-  );
+  --app-bg-dark: #0b0f1f;
+  --menu-tooltip-bg: #0b0f1f;
+
+  --chat-assistant-bg: #1f1f1f;
+  --chat-assistant-text: #ffffff;
+
+  --text-primary: #ffffff;
+  --text-secondary: #a7b0c0;
+  --divider-color: #303030;
+  --border-color-base: var(--divider-color);
 }
 
-/* Ant Design overrides (dark) */
 html[data-dark-mode="true"] .ant-card,
 body[data-dark-mode="true"] .ant-card {
-  background: #0f1428;
+  background: var(--sidebar-bg);
+  border-color: var(--divider-color);
+  color: var(--text-primary);
 }
+html[data-dark-mode="true"] .ant-card-head {
+  border-bottom-color: var(--divider-color);
+  color: var(--text-primary);
+}
+html[data-dark-mode="true"] .ant-card-head-title {
+  color: var(--text-primary);
+}
+
+html[data-dark-mode="true"] .ant-btn-text {
+  color: var(--text-primary);
+}
+html[data-dark-mode="true"] .ant-btn-text:hover,
+html[data-dark-mode="true"] .ant-btn-text:focus {
+  color: rgba(255, 255, 255, 0.85);
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+html[data-dark-mode="true"] .ant-btn-link {
+  color: var(--text-primary);
+}
+
 html[data-dark-mode="true"] .ant-descriptions {
-  background: #0f1428;
+  background: var(--sidebar-bg);
+  color: var(--text-primary);
+}
+html[data-dark-mode="true"] .ant-descriptions-bordered .ant-descriptions-view {
+  border-color: var(--divider-color);
+}
+html[data-dark-mode="true"] .ant-descriptions-bordered .ant-descriptions-item-label,
+html[data-dark-mode="true"] .ant-descriptions-bordered .ant-descriptions-item-content {
+  border-color: var(--divider-color);
+}
+html[data-dark-mode="true"] .ant-descriptions-item-label {
+  background-color: #1a2035;
+  color: var(--text-secondary);
+}
+html[data-dark-mode="true"] .ant-descriptions-item-content {
+  color: var(--text-primary);
+}
+
+html[data-dark-mode="true"] .ant-divider {
+  border-top-color: var(--divider-color);
+}
+
+html[data-dark-mode="true"] .ant-list-split .ant-list-item {
+  border-bottom-color: var(--divider-color);
+}
+
+html[data-dark-mode="true"] .ant-table-thead > tr > th {
+  background: var(--sidebar-bg);
+  border-bottom-color: var(--divider-color);
+  color: var(--text-secondary);
+}
+
+html[data-dark-mode="true"] .ant-table-tbody > tr > td {
+  background: var(--sidebar-bg);
+  border-bottom-color: var(--divider-color);
+  color: var(--text-primary);
+}
+
+/* Modal (Dialog) */
+html[data-dark-mode="true"] .ant-modal-content {
+  background: var(--sidebar-bg);
+  color: var(--text-primary);
+}
+html[data-dark-mode="true"] .ant-modal-header {
+  background: var(--sidebar-bg);
+  border-bottom-color: var(--divider-color);
+}
+html[data-dark-mode="true"] .ant-modal-title {
+  color: var(--text-primary);
+}
+html[data-dark-mode="true"] .ant-modal-body {
+  color: var(--text-primary);
+}
+html[data-dark-mode="true"] .ant-modal-footer {
+  border-top-color: var(--divider-color);
+}
+html[data-dark-mode="true"] .ant-modal-close,
+html[data-dark-mode="true"] .ant-modal-close-x {
+  color: var(--text-secondary);
+}
+
+html[data-dark-mode="true"] .ant-form-item-label > label {
+  color: var(--text-primary);
+}
+
+html[data-dark-mode="true"] .ant-btn-primary {
+  background: var(--brand-primary);
+  border-color: var(--brand-primary);
+  color: #ffffff;
+}
+html[data-dark-mode="true"] .ant-btn-primary:hover,
+html[data-dark-mode="true"] .ant-btn-primary:focus {
+  background: color-mix(in srgb, var(--brand-primary), white 12%);
+  border-color: color-mix(in srgb, var(--brand-primary), white 12%);
+}
+
+html[data-dark-mode="true"] .ant-upload .ant-btn {
+  background: var(--brand-primary);
+  border-color: var(--brand-primary);
+  color: #ffffff;
+}
+html[data-dark-mode="true"] .ant-upload .ant-btn:hover,
+html[data-dark-mode="true"] .ant-upload .ant-btn:focus {
+  background: color-mix(in srgb, var(--brand-primary), white 12%);
+  border-color: color-mix(in srgb, var(--brand-primary), white 12%);
+}
+
+/* Fix Input/Textarea borders in dark mode */
+html[data-dark-mode="true"] .ant-input,
+html[data-dark-mode="true"] .ant-input-password,
+html[data-dark-mode="true"] .ant-input-affix-wrapper {
+  background-color: var(--sidebar-bg);
+  border-color: var(--border-color-base);
+  color: var(--text-primary);
+}
+html[data-dark-mode="true"] .ant-input::placeholder {
+  color: #5a6475;
 }

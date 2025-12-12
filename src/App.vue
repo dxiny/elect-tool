@@ -3,7 +3,7 @@
     <aside class="sidebar">
       <Sidebar />
     </aside>
-    <main class="main-content">
+    <main class="main-content" :class="{ 'no-padding': route.meta?.noPadding }">
       <router-view />
     </main>
   </div>
@@ -35,12 +35,12 @@ watch(
   -moz-osx-font-smoothing: grayscale;
   height: 100vh;
   display: flex;
-  flex-direction: row; /* Change to row */
+  flex-direction: row;
   overflow: hidden;
 }
 
 .sidebar {
-  width: 80px; /* Match reference sidebar width */
+  width: 68px;
   height: 100%;
   flex-shrink: 0;
   display: flex;
@@ -54,14 +54,16 @@ watch(
   height: 100%;
   overflow: auto;
   position: relative;
-  /* border-top-left-radius: 5px;
-  border-bottom-left-radius: 5px; */
   background: var(--content-bg-light);
   box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
   margin: 0;
   padding: 24px;
 }
-/* Hide scrollbar in right content area */
+
+.main-content.no-padding {
+  padding: 0;
+}
+
 .main-content::-webkit-scrollbar {
   width: 0;
   height: 0;

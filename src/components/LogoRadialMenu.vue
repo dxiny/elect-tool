@@ -13,13 +13,13 @@
       <li style="--i: 2">
         <button class="radial-btn close" :class="{ raised: radialRaised }" @click.stop="onClose"><CloseOutlined /></button>
       </li>
-      <li style="--i: 3">
+      <!-- <li style="--i: 3">
         <div class="radial-btn theme-bubble" :class="{ raised: radialRaised }" @click.stop="onThemeBubbleClick">
           <div class="theme-mini">
             <ThemeSwitch />
           </div>
         </div>
-      </li>
+      </li> -->
     </div>
   </div>
 </template>
@@ -73,7 +73,7 @@ const onThemeBubbleClick = () => {
   setTimeout(() => {
     radialActive.value = false;
     radialRaised.value = false;
-  }, 3000);
+  }, 1000);
 };
 
 // Persist dark mode changes
@@ -184,15 +184,10 @@ onBeforeUnmount(() => {
   z-index: 1190;
   width: 25px;
   height: 25px;
+  color: rgb(112, 108, 119);
 }
 .radial-btn.raised {
   z-index: 1250;
-}
-.radial-btn.minimize {
-  color: #e91e63;
-}
-.radial-btn.close {
-  color: #ff4d4f;
 }
 .radial-btn.theme-bubble {
   width: 50px;

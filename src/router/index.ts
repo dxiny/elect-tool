@@ -20,8 +20,8 @@ const routes = [
   {
     path: '/gis',
     name: 'GIS',
-    component: Home, // Placeholder
-    meta: { title: 'GIS' }
+    component: () => import('@/pages/gis/Index.vue'),
+    meta: { title: 'GIS', noPadding: true }
   },
   {
     path: '/3d',

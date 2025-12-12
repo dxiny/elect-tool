@@ -577,119 +577,117 @@
   </button>
 </template>
 <script setup lang="ts">
-import { ref } from "vue";
+import { ref, onMounted, onBeforeUnmount, nextTick } from "vue";
 const pressed = ref(false);
-const sync = ref(true);
 const toggleBtn = ref<HTMLButtonElement | null>(null);
 
-const TOGGLE = (e: MouseEvent) => {
-  const next = !pressed.value;
-  pressed.value = next;
-  if (!sync.value) return;
+onMounted(() => {
+  // 初始化主题切换按钮
+  const savedMode = localStorage.getItem("app:dark-mode");
+  const domMode = document.body.getAttribute("data-dark-mode");
+  if (savedMode === "true" || domMode === "true") {
+    pressed.value = true;
+  }
 
-  const root = document.documentElement;
-  const body = document.body;
-  const btn = toggleBtn.value;
-  const brect = btn?.getBoundingClientRect();
-  const x = brect ? brect.left + brect.width / 2 : e.clientX;
-  const y = brect ? brect.top + brect.height / 2 : e.clientY;
-
-  const duration = 700;
-  const easing = "cubic-bezier(0.25, 0.8, 0.25, 1)";
-
-  const targets: HTMLElement[] = [];
-  const app = document.getElementById("app") as HTMLElement | null;
-  if (app) targets.push(app);
-  const mainEl = document.querySelector<HTMLElement>(".main-content");
-  if (mainEl) targets.push(mainEl);
-
-  const overlays: HTMLElement[] = [];
-  const createOverlay = (el: HTMLElement, bg: string, vx: number, vy: number, endR: number, isContent = false) => {
-    if (!el.style.position) el.style.position = "relative";
-    const rect = el.getBoundingClientRect();
-    const lx = vx - rect.left;
-    const ly = vy - rect.top;
-    const o = document.createElement("div");
-    o.className = isContent ? "theme-radial-overlay content" : "theme-radial-overlay";
-    if (isContent) {
-      o.style.setProperty("--overlay-content-bg", bg);
-    } else {
-      o.style.setProperty("--overlay-bg", bg);
+  // 监听 DOM 变化，同步主题切换按钮状态
+  const observer = new MutationObserver(() => {
+    const isDark = document.body.getAttribute("data-dark-mode") === "true";
+    if (pressed.value !== isDark) {
+      pressed.value = isDark;
     }
-    o.style.clipPath = `circle(${next ? 0 : endR}px at ${lx}px ${ly}px)`;
-    el.appendChild(o);
-    overlays.push(o);
-    return o.animate(
-      [
-        { clipPath: `circle(${next ? 0 : endR}px at ${lx}px ${ly}px)` },
-        { clipPath: `circle(${next ? endR : 0}px at ${lx}px ${ly}px)` },
-      ],
-      { duration, easing, fill: "forwards" }
-    ).finished;
-  };
+  });
+  observer.observe(document.body, {
+    attributes: true,
+    attributeFilter: ["data-dark-mode"],
+  });
 
-  const createRootOverlay = (bg: string, vx: number, vy: number, endR: number) => {
-    const rr = endR;
-    const o = document.createElement("div");
-    o.className = "theme-radial-overlay root";
-    o.style.setProperty("--overlay-bg", bg);
-    o.style.clipPath = `circle(${next ? 0 : rr}px at ${vx}px ${vy}px)`;
-    document.body.appendChild(o);
-    overlays.push(o);
-    return o.animate(
-      [
-        { clipPath: `circle(${next ? 0 : rr}px at ${vx}px ${vy}px)` },
-        { clipPath: `circle(${next ? rr : 0}px at ${vx}px ${vy}px)` },
-      ],
-      { duration, easing, fill: "forwards" }
-    ).finished;
-  };
+  onBeforeUnmount(() => {
+    observer.disconnect();
+  });
+});
 
-  const prefersReduced = window.matchMedia(
-    "(prefers-reduced-motion: reduce)"
-  ).matches;
-  if (prefersReduced) {
-    body.setAttribute("data-dark-mode", String(next));
-    root.setAttribute("data-dark-mode", String(next));
+const TOGGLE = (e: MouseEvent) => {
+  const isDark = pressed.value;
+  if (
+    !document.startViewTransition ||
+    window.matchMedia("(prefers-reduced-motion: reduce)").matches
+  ) {
+    toggleDarkMode(!isDark);
     return;
   }
 
-  if (!next) {
-    body.setAttribute("data-dark-mode", "false");
-    root.setAttribute("data-dark-mode", "false");
-  } else {
-    // 仅提前切换文字与图标，不改变背景
-    document.getElementById("app")?.setAttribute("data-ink-dark", "true");
-  }
+  const btn = toggleBtn.value;
+  const rect = btn?.getBoundingClientRect();
+  const x = rect ? rect.left + rect.width / 2 : e.clientX;
+  const y = rect ? rect.top + rect.height / 2 : e.clientY;
 
-  const vw = window.innerWidth;
-  const vh = window.innerHeight;
-  const endR = Math.max(
-    Math.hypot(x, y),
-    Math.hypot(vw - x, y),
-    Math.hypot(x, vh - y),
-    Math.hypot(vw - x, vh - y)
+  const endRadius = Math.hypot(
+    Math.max(x, innerWidth - x),
+    Math.max(y, innerHeight - y)
   );
 
-  const animations: Promise<any>[] = [];
-  if (app) {
-    animations.push(createRootOverlay("var(--app-bg-dark)", x, y, endR));
-  }
-  if (mainEl) {
-    const composite = `${next ? "var(--app-bg-dark)" : "var(--app-bg-light)"}, ${next ? "linear-gradient(var(--content-bg-dark), var(--content-bg-dark))" : "linear-gradient(var(--content-bg-light), var(--content-bg-light))"}`;
-    animations.push(createOverlay(mainEl, composite, x, y, endR, true));
+  const isGoingToDark = !isDark;
+
+  if (!isGoingToDark) {
+    document.documentElement.classList.add("theme-transition-back");
   }
 
-  Promise.all(animations)
-    .catch(() => {})
-    .finally(() => {
-      if (next) {
-        body.setAttribute("data-dark-mode", "true");
-        root.setAttribute("data-dark-mode", "true");
-        document.getElementById("app")?.removeAttribute("data-ink-dark");
-      }
-      overlays.forEach((o) => o.remove());
-    });
+  const transition = document.startViewTransition(async () => {
+    toggleDarkMode(!isDark);
+    await nextTick();
+  });
+
+  transition.ready.then(() => {
+    const clipPath = [
+      `circle(0px at ${x}px ${y}px)`,
+      `circle(${endRadius}px at ${x}px ${y}px)`,
+    ];
+
+    if (isGoingToDark) {
+      // Light -> Dark
+      // Animate New (Dark) expanding
+      document.documentElement.animate(
+        {
+          clipPath: clipPath,
+        },
+        {
+          duration: 500,
+          easing: "ease-in",
+          pseudoElement: "::view-transition-new(root)",
+        }
+      );
+    } else {
+      // Dark -> Light
+      // Animate Old (Dark) shrinking
+      document.documentElement.animate(
+        {
+          clipPath: clipPath.reverse(),
+        },
+        {
+          duration: 500,
+          easing: "ease-out",
+          pseudoElement: "::view-transition-old(root)",
+        }
+      );
+    }
+  });
+
+  transition.finished.then(() => {
+    document.documentElement.classList.remove("theme-transition-back");
+  });
+};
+
+const toggleDarkMode = (isDark: boolean) => {
+  pressed.value = isDark;
+  const val = String(isDark);
+  document.body.setAttribute("data-dark-mode", val);
+  document.documentElement.setAttribute("data-dark-mode", val);
+  localStorage.setItem("app:dark-mode", val);
+
+  // Also handle the ink-dark attribute if needed, though view transition handles visuals
+  if (isDark) {
+    document.getElementById("app")?.removeAttribute("data-ink-dark");
+  }
 };
 </script>
 <style>
@@ -713,36 +711,32 @@ html {
 [data-dark-mode="false"] body,
 html:not([data-dark-mode]),
 body:not([data-dark-mode]) {
-  background-image: linear-gradient(to top, #accbee 0%, #e7f0fd 100%);
+  background: var(--content-bg-light);
 }
 [data-dark-mode="true"] html,
 [data-dark-mode="true"] body {
-  background-image: linear-gradient(to right, #434343 0%, black 100%);
+  background: var(--content-bg-dark);
 }
 
-/* 径向主题过渡覆盖层 */
-.theme-radial-overlay {
-  position: absolute;
-  inset: 0;
-  z-index: 0;
-  pointer-events: none;
-  background-image: var(--overlay-bg);
-  background-size: cover, cover;
-  background-repeat: no-repeat, no-repeat;
-  will-change: clip-path;
+/* 径向主题过渡覆盖层 - REPLACED WITH VIEW TRANSITIONS */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
 }
-.theme-radial-overlay.root {
-  position: fixed;
-  inset: 0;
+
+::view-transition-old(root) {
+  z-index: 1;
 }
-.theme-radial-overlay.content {
-  position: absolute;
-  inset: 0;
-  z-index: 0;
-  pointer-events: none;
-  background-image: var(--overlay-content-bg);
-  background-size: cover, cover;
-  background-repeat: no-repeat, no-repeat;
+::view-transition-new(root) {
+  z-index: 999;
+}
+
+.theme-transition-back::view-transition-old(root) {
+  z-index: 999;
+}
+.theme-transition-back::view-transition-new(root) {
+  z-index: 1;
 }
 </style>
 <style scoped>
@@ -1116,13 +1110,13 @@ body:not([data-dark-mode]) {
 <style>
 html[data-dark-mode="true"],
 body[data-dark-mode="true"] {
-  background-image: var(--app-bg-dark);
+  background: var(--app-bg-dark);
   color-scheme: dark only;
 }
 html:not([data-dark-mode]),
 body:not([data-dark-mode]),
 html[data-dark-mode="false"],
 body[data-dark-mode="false"] {
-  background-image: var(--app-bg-light) !important;
+  background: var(--app-bg-light) !important;
 }
 </style>

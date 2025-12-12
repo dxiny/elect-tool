@@ -4,16 +4,170 @@ html[data-dark-mode="false"],
 body[data-dark-mode="false"] {
   --sidebar-bg: #ffffff;
   --content-bg-light: #f5f8ff;
-  --app-bg-light: radial-gradient(
-    circle at 40% 0%,
-    #eaf2ff 0%,
-    #8fb6ff 35%,
-    #5a8ae3 100%
-  );
+  --app-bg-light: #f5f8ff;
+  --menu-tooltip-bg: #f5f8ff;
+
+  --chat-assistant-bg: #f5f5f5;
+  --chat-assistant-text: #333333;
+
+  --text-primary: #1f2937;
+  --text-secondary: #4b5563;
+  --divider-color: #f0f0f0;
+  --border-color-base: var(--divider-color);
 }
 
-/* Ant Design overrides (light) */
 .ant-card,
 .ant-descriptions {
   background: #ffffff;
+}
+
+html:not([data-dark-mode]) .ant-card,
+body:not([data-dark-mode]) .ant-card,
+html[data-dark-mode="false"] .ant-card,
+body[data-dark-mode="false"] .ant-card {
+  border-color: var(--divider-color);
+  color: var(--text-primary);
+}
+
+html:not([data-dark-mode]) .ant-card-head,
+body:not([data-dark-mode]) .ant-card-head,
+html[data-dark-mode="false"] .ant-card-head,
+body[data-dark-mode="false"] .ant-card-head {
+  border-bottom-color: var(--divider-color);
+  color: var(--text-primary);
+}
+
+html:not([data-dark-mode]) .ant-btn-text,
+body:not([data-dark-mode]) .ant-btn-text,
+html[data-dark-mode="false"] .ant-btn-text,
+body[data-dark-mode="false"] .ant-btn-text {
+  color: var(--text-primary);
+}
+
+html:not([data-dark-mode]) .ant-btn-link,
+body:not([data-dark-mode]) .ant-btn-link,
+html[data-dark-mode="false"] .ant-btn-link,
+body[data-dark-mode="false"] .ant-btn-link {
+  color: var(--text-primary);
+}
+
+html:not([data-dark-mode]) .ant-descriptions,
+body:not([data-dark-mode]) .ant-descriptions,
+html[data-dark-mode="false"] .ant-descriptions,
+body[data-dark-mode="false"] .ant-descriptions {
+  color: var(--text-primary);
+}
+
+html:not([data-dark-mode]) .ant-descriptions-bordered .ant-descriptions-view,
+body:not([data-dark-mode]) .ant-descriptions-bordered .ant-descriptions-view,
+html[data-dark-mode="false"] .ant-descriptions-bordered .ant-descriptions-view,
+body[data-dark-mode="false"] .ant-descriptions-bordered .ant-descriptions-view {
+  border-color: var(--divider-color);
+}
+
+html:not([data-dark-mode]) .ant-descriptions-bordered .ant-descriptions-item-label,
+body:not([data-dark-mode]) .ant-descriptions-bordered .ant-descriptions-item-label,
+html[data-dark-mode="false"] .ant-descriptions-bordered .ant-descriptions-item-label,
+body[data-dark-mode="false"] .ant-descriptions-bordered .ant-descriptions-item-label,
+html:not([data-dark-mode]) .ant-descriptions-bordered .ant-descriptions-item-content,
+body:not([data-dark-mode]) .ant-descriptions-bordered .ant-descriptions-item-content,
+html[data-dark-mode="false"] .ant-descriptions-bordered .ant-descriptions-item-content,
+body[data-dark-mode="false"] .ant-descriptions-bordered .ant-descriptions-item-content {
+  border-color: var(--divider-color);
+}
+
+html:not([data-dark-mode]) .ant-descriptions-item-label,
+body:not([data-dark-mode]) .ant-descriptions-item-label,
+html[data-dark-mode="false"] .ant-descriptions-item-label,
+body[data-dark-mode="false"] .ant-descriptions-item-label {
+  background-color: #fafafa;
+  color: var(--text-secondary);
+}
+
+html:not([data-dark-mode]) .ant-descriptions-item-content,
+body:not([data-dark-mode]) .ant-descriptions-item-content,
+html[data-dark-mode="false"] .ant-descriptions-item-content,
+body[data-dark-mode="false"] .ant-descriptions-item-content {
+  color: var(--text-primary);
+}
+
+html:not([data-dark-mode]) .ant-divider,
+body:not([data-dark-mode]) .ant-divider,
+html[data-dark-mode="false"] .ant-divider,
+body[data-dark-mode="false"] .ant-divider {
+  border-top-color: var(--divider-color);
+}
+
+html:not([data-dark-mode]) .ant-list-split .ant-list-item,
+body:not([data-dark-mode]) .ant-list-split .ant-list-item,
+html[data-dark-mode="false"] .ant-list-split .ant-list-item,
+body[data-dark-mode="false"] .ant-list-split .ant-list-item {
+  border-bottom-color: var(--divider-color);
+}
+
+html:not([data-dark-mode]) .ant-table-thead > tr > th,
+body:not([data-dark-mode]) .ant-table-thead > tr > th,
+html[data-dark-mode="false"] .ant-table-thead > tr > th,
+body[data-dark-mode="false"] .ant-table-thead > tr > th {
+  border-bottom-color: var(--divider-color);
+  color: var(--text-secondary);
+}
+
+html:not([data-dark-mode]) .ant-table-tbody > tr > td,
+body:not([data-dark-mode]) .ant-table-tbody > tr > td,
+html[data-dark-mode="false"] .ant-table-tbody > tr > td,
+body[data-dark-mode="false"] .ant-table-tbody > tr > td {
+  border-bottom-color: var(--divider-color);
+  color: var(--text-primary);
+}
+
+html:not([data-dark-mode]) .ant-form-item-label > label,
+body:not([data-dark-mode]) .ant-form-item-label > label,
+html[data-dark-mode="false"] .ant-form-item-label > label,
+body[data-dark-mode="false"] .ant-form-item-label > label {
+  color: var(--text-primary);
+}
+
+/* Modal (Dialog) */
+html:not([data-dark-mode]) .ant-modal-content,
+body:not([data-dark-mode]) .ant-modal-content,
+html[data-dark-mode="false"] .ant-modal-content,
+body[data-dark-mode="false"] .ant-modal-content {
+  background: #ffffff;
+  color: var(--text-primary);
+}
+html:not([data-dark-mode]) .ant-modal-header,
+body:not([data-dark-mode]) .ant-modal-header,
+html[data-dark-mode="false"] .ant-modal-header,
+body[data-dark-mode="false"] .ant-modal-header {
+  background: #ffffff;
+  border-bottom-color: var(--divider-color);
+}
+html:not([data-dark-mode]) .ant-modal-title,
+body:not([data-dark-mode]) .ant-modal-title,
+html[data-dark-mode="false"] .ant-modal-title,
+body[data-dark-mode="false"] .ant-modal-title {
+  color: var(--text-primary);
+}
+html:not([data-dark-mode]) .ant-modal-body,
+body:not([data-dark-mode]) .ant-modal-body,
+html[data-dark-mode="false"] .ant-modal-body,
+body[data-dark-mode="false"] .ant-modal-body {
+  color: var(--text-primary);
+}
+html:not([data-dark-mode]) .ant-modal-footer,
+body:not([data-dark-mode]) .ant-modal-footer,
+html[data-dark-mode="false"] .ant-modal-footer,
+body[data-dark-mode="false"] .ant-modal-footer {
+  border-top-color: var(--divider-color);
+}
+html:not([data-dark-mode]) .ant-modal-close,
+body:not([data-dark-mode]) .ant-modal-close,
+html[data-dark-mode="false"] .ant-modal-close,
+body[data-dark-mode="false"] .ant-modal-close,
+html:not([data-dark-mode]) .ant-modal-close-x,
+body:not([data-dark-mode]) .ant-modal-close-x,
+html[data-dark-mode="false"] .ant-modal-close-x,
+body[data-dark-mode="false"] .ant-modal-close-x {
+  color: var(--text-secondary);
 }

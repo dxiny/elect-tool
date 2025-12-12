@@ -286,3 +286,69 @@ ElectTool 是一个基于 Electron + Vue 3 的跨平台桌面工具应用，集�
 | **3D**  | Babylon.js              | Three.js       | **Babylon.js** | 引擎化程度高，API 设计更面向对象，自带调试工具，适合做工具类应用。 |
 | **DB**  | SQLite (better-sqlite3) | LevelDB / RxDB | **SQLite**     | SQL 语言通用性强，查询能力丰富，生态成熟。             |
 
+## 8. GIS：旅游足迹与路线规划可行性与实施方案
+
+### 8.1 业务目标
+
+- 旅游足迹：记录“去过的城市/地点”，在地图标注并下钻到城市内的详细游玩路线与事件（吃、拍照、花费、评价）。
+- 路线规划：
+  - 城市内常规路线（步行/驾车/骑行）最短/最快路径与等时圈覆盖。
+  - 城际出行（高铁/飞机/公交）对比方案：价格、耗时、换乘次数，推荐最优方案。
+- 首页原型：右侧为持续旋转的“地球”视觉，左侧两个入口按钮（旅游记录、路线规划）。
+
+### 8.2 技术可行性
+
+- 地图渲染：MapLibre GL JS 可实现二维矢量瓦片渲染、标注、符号图层与交互；Turf.js 可作轻量空间分析（缓冲、距离、点在面内）。
+- 旋转地球：建议使用 Three.js 构建球体（地球贴图 + 高光），支持相机自动旋转与 Marker（Sprite）叠加；也可用 echarts-gl 的 globe 实现快速原型。
+- 城市内路线：开源路由引擎可选 OSRM 或 Valhalla（支持驾车/步行/骑行、等时线），可部署到本地或服务器，前端直接调用其 REST API。
+- 城际航班：可用 Amadeus 或 Skyscanner Partners（需注册/付费，额度限制）；国内 OTA（携程、去哪儿）没有公开稳定的官方 API，抓取不合规，建议使用付费国际 API 或仅提供“占位字段 + 手动填充”。
+- 城际铁路：12306 无公开 API；社区方案不可控且风险高；建议将铁路部分设计为信息占位与手动录入或接入第三方付费数据源。
+
+### 8.3 数据源与成本
+
+- 底图与地理数据：
+  - 免费：OpenStreetMap（矢量瓦片），Natural Earth（国界/海岸线）。
+  - 自建：OpenMapTiles 矢量瓦片（可下载中国/全球），本地 tileserver 提供离线可用。
+- 地理编码（地址⇄经纬度）：OpenCage（付费/免费额度）、Pelias（自建），国内可选高德/腾讯（GCJ-02 坐标需转换）。
+- 城市内路由：OSRM/Valhalla 自建（开源免费，服务器成本为带宽/CPU）。
+- 航班：Amadeus（按调用量计费）、Skyscanner（合作计划）；成本随查询量增长，个人项目需做限频与缓存。
+- 图片与资产：存储于本地 `assets/` 目录或对象存储；元数据写入 SQLite。
+
+### 8.4 领域模型与后端接口草案
+
+- 旅行记录（travel）：`id, title, startDate, endDate, cities[], totalCost, rating`。
+- 城市足迹（city_visit）：`id, travelId, cityCode, markers[], routes[]`。
+- 标记（marker）：`id, type(eat/photo/poi), name, lng, lat, cost?, note?, assets[]`。
+- 路线（route）：`id, cityVisitId, mode(walk/drive/rail/flight), geojson(LineString/Multi), duration, distance, cost`。
+- 资产（asset）：沿用现有 `server/routes/assets.cjs` 与 `server/services/assetsService.cjs`。
+- 规划接口：
+  - `POST /api/route/city` → 调 OSRM/Valhalla 返回几条备选路线。
+  - `POST /api/route/intercity` → 拉取航班/铁路/巴士信息（若无稳定 API，则返回占位并支持手动录入）。
+
+### 8.5 前端页面结构
+
+- GIS 首页：右侧 Three.js 地球持续旋转（Hex/粒子风格），左侧按钮入口与统计卡片（游玩次数、最长停留、总花费）。
+- 城市足迹页：MapLibre GL JS 加载底图，图层：城市范围、POI 标记、游玩路径；点击标记弹出详情卡（店名、花费、图片预览、评价）。
+- 路线规划页：左侧表单选择“起点/终点/交通模式/预算”，右侧地图渲染路线与方案列表（时间、价格、换乘）；支持方案对比与收藏。
+
+### 8.6 实施步骤
+
+1. 原型落地：搭建 GIS 首页（Three.js 地球 + 两按钮），建立基础路由与页面骨架。
+2. 城市足迹：实现 MapLibre 地图、城市标注、下钻至城市内图层；Marker 弹窗展示事件详情与图片；数据写入 SQLite。
+3. 路线规划（城市内）：部署 OSRM/Valhalla，接入 REST，展示路线与等时线；做调用限频与结果缓存。
+4. 路线规划（城际）：接入 Amadeus/Skyscanner（若选择），或先做手动录入 + 方案对比框架；预留接口适配。
+5. 统计与报表：总清单、最长停留、总花费、评价榜单与“好吃店”标签；用 ECharts 做可视化。
+6. 离线能力：下载中国区域矢量瓦片与样式，本地 tileserver 提供；前端支持离线渲染与缓存。
+
+### 8.7 风险与应对
+
+- 坐标系偏移：国内服务返回 GCJ-02，需转换到 WGS84，避免 MapLibre 显示偏移。
+- 航班/铁路数据：官方稳定 API 稀缺；优先国际付费 API；国内建议手动录入或购买数据服务。
+- 性能：大规模 GeoJSON 渲染卡顿，需使用矢量瓦片与样式表达；路径计算放到服务端，前端只渲染。
+- 法规与合规：避免爬取；尊重数据版权与使用条款；位置数据按敏感信息处理。
+
+### 8.8 结论
+
+- 旅游足迹模块完全可行，成本可控，优先落地。
+- 城市内路线规划可自建免费服务（OSRM/Valhalla），技术成熟。
+- 城际规划受 API 成本与合规影响，可先做手动录入与方案框架，后续按预算接入付费 API。

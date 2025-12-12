@@ -12,12 +12,30 @@
         :class="{ active: isActive(item.path) }"
         @click="handleMenuClick(item.path)"
       >
-        <component :is="item.icon" class="menu-icon" />
+        <a-tooltip
+          color="var(--menu-tooltip-bg)"
+          placement="right"
+          :title="item.title"
+          :overlayInnerStyle="{
+            fontSize: '12px',
+            color: isDarkMode ? '#fff' : '#000',
+          }"
+        >
+          <component :is="item.icon" class="menu-icon" />
+        </a-tooltip>
       </div>
     </div>
 
     <!-- 头像 -->
     <div class="bottom-area">
+      <div
+        class="action-btn"
+        :class="{ spin: isRefreshing }"
+        @click="handleRefresh"
+        title="刷新页面"
+      >
+        <ReloadOutlined />
+      </div>
       <div class="avatar-wrapper" @click="toProfile" title="个人资料">
         <a-avatar :size="36" :src="avatar">
           <template #icon><UserOutlined /></template>
@@ -31,24 +49,49 @@
 import { useMenuStore } from "@/stores/menu";
 import { storeToRefs } from "pinia";
 import { useRoute, useRouter } from "vue-router";
-import { computed, ref } from "vue";
+import { ref, computed, onMounted, onBeforeUnmount } from "vue";
 import LogoRadialMenu from "@/components/LogoRadialMenu.vue";
-import { UserOutlined } from "@ant-design/icons-vue";
+import { UserOutlined, ReloadOutlined } from "@ant-design/icons-vue";
 import avatar from "@/assets/images/avatar.jpg";
 
 const store = useMenuStore();
 const { menu } = storeToRefs(store);
 const route = useRoute();
 const router = useRouter();
+const isRefreshing = ref(false);
 
 const isActive = (path: string) => {
   if (path === "/" && route.path === "/") return true;
   if (path !== "/" && route.path.startsWith(path)) return true;
   return false;
 };
+const isDarkMode = ref(document.body.getAttribute("data-dark-mode") === "true");
+let darkObserver: MutationObserver | null = null;
+
+onMounted(() => {
+  darkObserver = new MutationObserver(() => {
+    isDarkMode.value = document.body.getAttribute("data-dark-mode") === "true";
+  });
+  darkObserver.observe(document.body, {
+    attributes: true,
+    attributeFilter: ["data-dark-mode"],
+  });
+});
+
+onBeforeUnmount(() => {
+  darkObserver?.disconnect();
+  darkObserver = null;
+});
 
 const handleMenuClick = (path: string) => {
   router.push(path);
+};
+
+const handleRefresh = () => {
+  isRefreshing.value = true;
+  setTimeout(() => {
+    window.location.reload();
+  }, 500);
 };
 
 const toProfile = () => {
@@ -57,6 +100,9 @@ const toProfile = () => {
 </script>
 
 <style scoped>
+.menu-tooltip {
+  font-size: 12px;
+}
 .sidebar-container {
   height: 100%;
   display: flex;
@@ -125,6 +171,38 @@ const toProfile = () => {
   -webkit-app-region: no-drag;
 }
 
+.action-btn {
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: var(--menu-icon-default);
+  transition: all 0.2s;
+  border-radius: 50%;
+}
+
+.action-btn:hover {
+  color: var(--brand-primary);
+  background: rgba(0, 0, 0, 0.05);
+}
+
+.action-btn.spin {
+  animation: spin 1s linear infinite;
+  color: var(--brand-primary);
+  pointer-events: none;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
 .avatar-wrapper {
   cursor: pointer;
   transition: transform 0.2s;
@@ -188,8 +266,8 @@ const toProfile = () => {
 }
 
 [data-dark-mode="true"] .window-controls-popover .ant-popover-inner {
-  background: #1f2937;
-  border: 1px solid #374151;
+  background: var(--sidebar-bg);
+  border: 1px solid var(--divider-color);
 }
 
 [data-dark-mode="true"] .window-btn {
