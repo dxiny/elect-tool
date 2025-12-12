@@ -1,6 +1,6 @@
 <template>
   <a-row :gutter="16" class="gis-home">
-    <a-col :span="4" class="left">
+    <a-col :span="6" class="left">
       <!-- <a-card :bordered="false"> -->
       <!-- <div class="section-title">GIS</div> -->
       <!-- <a-space direction="vertical" style="width: 100%">
@@ -11,7 +11,7 @@
         </a-space> -->
       <!-- </a-card> -->
     </a-col>
-    <a-col :span="20" class="right">
+    <a-col :span="18" class="right">
       <div ref="globeContainer" id="container" class="globe-container"></div>
     </a-col>
   </a-row>
@@ -68,14 +68,14 @@ const initGlobe = () => {
     config: earthConfig,
     limitFps: true,
   });
-  const px = 300;
   const style = chart.style;
   const cam = chart.camera;
   const widthPx = style.width || dom.clientWidth || 0;
+  const px = widthPx / 2; // Anchor to right edge
   if (widthPx > 0) {
     if (cam.isOrthographicCamera) {
       const k = style.width / style.height;
-      const s = 300;
+      const s = 130;
       const viewWidthWorld = 2 * s * k;
       const worldDx = (px * viewWidthWorld) / widthPx;
       chart.mainContainer.position.x += worldDx;
