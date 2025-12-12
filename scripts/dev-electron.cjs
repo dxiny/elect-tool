@@ -5,7 +5,6 @@ const DEFAULT_PORT = 4002
 const timeoutMs = 120000
 
 const isWin = process.platform === 'win32'
-const npmCmd = isWin ? 'npm.cmd' : 'npm'
 const npxCmd = isWin ? 'npx.cmd' : 'npx'
 
 function check(url) {
