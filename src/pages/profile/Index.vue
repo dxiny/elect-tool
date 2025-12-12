@@ -132,7 +132,36 @@ const closeEdit = () => {
   editOpen.value = false;
 };
 
-// 拦截上传，直接读取为 data URL 进行预览与保存
+const compressToDataUrl = (file: File, maxSize = 512, quality = 0.85) =>
+  new Promise<string>((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => {
+      const img = new Image();
+      img.onload = () => {
+        const canvas = document.createElement("canvas");
+        let w = img.width;
+        let h = img.height;
+        const scale = Math.min(1, maxSize / Math.max(w, h));
+        w = Math.round(w * scale);
+        h = Math.round(h * scale);
+        canvas.width = w;
+        canvas.height = h;
+        const ctx = canvas.getContext("2d");
+        if (!ctx) {
+          resolve(String(reader.result || ""));
+          return;
+        }
+        ctx.drawImage(img, 0, 0, w, h);
+        const url = canvas.toDataURL("image/jpeg", quality);
+        resolve(url);
+      };
+      img.onerror = reject;
+      img.src = String(reader.result || "");
+    };
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+
 const handleBeforeUpload = async (file: File) => {
   const toDataUrl = (f: File) =>
     new Promise<string>((resolve, reject) => {
@@ -142,8 +171,12 @@ const handleBeforeUpload = async (file: File) => {
       reader.readAsDataURL(f);
     });
   try {
-    editAvatarPreview.value = await toDataUrl(file);
-  } catch {}
+    editAvatarPreview.value = await compressToDataUrl(file, 512, 0.85);
+  } catch {
+    try {
+      editAvatarPreview.value = await toDataUrl(file);
+    } catch {}
+  }
   return false;
 };
 
