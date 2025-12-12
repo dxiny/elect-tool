@@ -15,7 +15,7 @@ const routes = [
     path: '/ai',
     name: 'AI',
     component: AIIndex,
-    meta: { title: 'AI' }
+    meta: { title: 'AI', noPadding: true }
   },
   {
     path: '/gis',

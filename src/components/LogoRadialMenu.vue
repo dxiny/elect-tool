@@ -197,6 +197,9 @@ onBeforeUnmount(() => {
   box-shadow: none;
   border-radius: 6px;
 }
+.close {
+  color: rgb(255, 0, 93);
+}
 .theme-mini {
   display: flex;
   align-items: center;

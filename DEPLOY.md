@@ -28,13 +28,20 @@ ssh root@116.62.133.219
 
 ### 2.2 拉取最新代码
 
-进入项目目录（路径为 `/var/www/ElectTool`）：
+进入项目目录
 
 ```bash
-cd /var/www/ElectTool
+cd /home/admin/elect-tool
+
+# 如果找不到项目目录，在全盘搜索名为 elect-tool 的文件夹
+find / -type d -name "elect-tool" 2>/dev/null
 
 # 拉取最新代码
 git pull codeup main
+
+# 如果报错 Could not read from remote repository.提示服务器上的 git 仓库没有配置名为 codeup 的远程地址,执行以下命令添加远程地址,然后再次拉取
+
+git remote add codeup https://codeup.aliyun.com/67e107468571f8159f9a986a/elect-tool.git
 ```
 
 > **注意**：如果提示冲突，请先手动解决或强制重置（慎用）：`git reset --hard codeup/main`

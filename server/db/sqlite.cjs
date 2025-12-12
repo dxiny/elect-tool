@@ -21,5 +21,6 @@ db.exec('CREATE TABLE IF NOT EXISTS travels (id TEXT PRIMARY KEY, title TEXT, st
 db.exec('CREATE TABLE IF NOT EXISTS city_visits (id TEXT PRIMARY KEY, travel_id TEXT, city_code TEXT, city_name TEXT, start_time TEXT, end_time TEXT, notes TEXT, created_at TEXT, updated_at TEXT)')
 db.exec('CREATE TABLE IF NOT EXISTS travel_markers (id TEXT PRIMARY KEY, visit_id TEXT, type TEXT, name TEXT, lng REAL, lat REAL, cost REAL, note TEXT, assets_json TEXT, created_at TEXT)')
 db.exec('CREATE TABLE IF NOT EXISTS travel_routes (id TEXT PRIMARY KEY, visit_id TEXT, mode TEXT, geojson TEXT, duration INTEGER, distance REAL, cost REAL, created_at TEXT)')
+db.exec('CREATE TABLE IF NOT EXISTS ai_sessions (id TEXT PRIMARY KEY, title TEXT, messages TEXT, updated_at INTEGER)')
 
 module.exports = { db }

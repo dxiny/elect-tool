@@ -14,6 +14,19 @@ body[data-dark-mode="true"] {
   --text-secondary: #a7b0c0;
   --divider-color: #303030;
   --border-color-base: var(--divider-color);
+
+  /* AI Chat Specific Variables (Dark) */
+  --ai-bg: radial-gradient(circle at 50% -20%, #1a1f3c 0%, #0b0f1f 60%);
+  --ai-sidebar-bg: #25233a; /* Keeping sidebar distinct or reuse --sidebar-bg */
+  --ai-bubble-user-bg: rgba(255, 255, 255, 0.1);
+  --ai-bubble-user-text: #ffffff;
+  --ai-bubble-assistant-bg: transparent;
+  --ai-bubble-assistant-text: #e5e7eb;
+  --ai-input-bg: rgba(255, 255, 255, 0.05);
+  --ai-input-text: #ffffff;
+  --ai-item-hover-bg: rgba(255, 255, 255, 0.05);
+  --ai-item-active-bg: linear-gradient(90deg, rgba(122, 102, 255, 0.1), transparent);
+  --ai-item-active-text: #ffffff;
 }
 
 html[data-dark-mode="true"] .ant-card,

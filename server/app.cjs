@@ -21,6 +21,7 @@ app.use('/api/travels', require('./routes/travels.cjs'))
 app.use('/api/city-visits', require('./routes/cityVisits.cjs'))
 app.use('/api/markers', require('./routes/travelMarkers.cjs'))
 app.use('/api/routes', require('./routes/travelRoutes.cjs'))
+app.use('/api/ai', require('./routes/ai.cjs'))
 
 // 全局错误处理中间件
 app.use(errorHandler)
