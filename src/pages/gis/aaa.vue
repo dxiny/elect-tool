@@ -316,30 +316,7 @@ const initStatChart = () => {
   };
   statChart.setOption(option);
 };
-const blueStyle = {
-  mapStyleAreaColor: "#013e87",
-  mapStyleLineColor: "#516aaf",
-  spriteStyleColor: "#138cdf",
-  pathStyleColor: "#7aaae9",
-  flyLineStyleColor: "#02fff6",
-  roadStyleFlyLineStyleColor: "#02fff6",
-  roadStylePathStyleColor: "#02fff6",
-  scatterStyleColor: "#02fff6",
-  wallStyleColor: "#02fff6",
-};
-const poppleStyle = {
-  mapStyleAreaColor: "#2e3564",
-  mapStyleLineColor: "#797eff",
-  spriteStyleColor: "#797eff",
-  pathStyleColor: "#cd79ff",
-  flyLineStyleColor: "#cd79ff",
-  roadStyleFlyLineStyleColor: "#fff602",
-  roadStylePathStyleColor: "#fff602",
-  scatterStyleColor: "#cd79ff",
-  wallStyleColor: "#fff602",
-};
-// const style = blueStyle
-const style = poppleStyle;
+
 const config = {
   R: 240,
   stopRotateByHover: false,
@@ -350,37 +327,30 @@ const config = {
     },
   },
   enableZoom: false,
-  hoverRegionStyle: {
-    show: false,
-  },
   mapStyle: {
-    areaColor: style.mapStyleAreaColor,
-    lineColor: style.mapStyleLineColor,
+    areaColor: "#2e3564",
+    lineColor: "#797eff",
   },
   spriteStyle: {
-    color: style.spriteStyleColor,
-    size: 2.5,
+    color: "#797eff",
   },
   pathStyle: {
-    color: style.pathStyleColor,
+    color: "#cd79ff",
   },
   flyLineStyle: {
-    color: style.flyLineStyleColor,
-  },
-  roadStyle: {
-    flyLineStyle: {
-      color: style.roadStyleFlyLineStyleColor,
-    },
-    pathStyle: {
-      color: style.roadStylePathStyleColor,
-    },
+    color: "#cd79ff",
   },
   scatterStyle: {
-    color: style.scatterStyleColor,
+    color: "#cd79ff",
   },
-  wallStyle: {
-    color: style.wallStyleColor,
-    opacity: 0.5,
+  hoverRegionStyle: {
+    areaColor: "#cd79ff",
+    show: false,
+  },
+  regions: {
+    China: {
+      areaColor: "#2e3564",
+    },
   },
 };
 const updateLeftZoneLayout = () => {

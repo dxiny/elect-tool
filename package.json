@@ -23,6 +23,7 @@
     "better-sqlite3": "^9.6.0",
     "cors": "^2.8.5",
     "earth-flyline": "^1.6.4",
+    "echarts": "^6.0.0",
     "express": "^4.22.1",
     "pinia": "^2.2.0",
     "three": "^0.182.0",

@@ -8,17 +8,17 @@ Elect Tool 是一个基于 Vue 3 + Ant Design Vue + Electron 的现代化桌面�
 
 *   **🗺️ GIS 地图引擎**：离线地图加载、矢量数据 (GeoJSON) 管理、空间分析、运动轨迹分析。
 *   **🎲 3D 可视化**：GLB/OBJ 模型查看、场景交互、模型检查与格式转换。
-*   **🤖 AI 智能助手**：支持多模型对话 (OpenAI/DeepSeek)、本地知识库 (RAG)、历史记录管理。
+*   **🤖 AI 智能助手**：本地知识库 (RAG)、历史记录管理。
 *   **📝 辅助工具**：富文本备忘录、个人中心配置、系统集成（托盘/通知）。
 
 ### 技术栈
 
 *   **前端**：`Vue 3`、`TypeScript`、`Pinia`、`Vue Router`、`Ant Design Vue`
-*   **可视化**：`MapLibre GL JS` (GIS), `Babylon.js` (3D)
+*   **可视化**：`MapLibre GL JS` (GIS), `Three.js` (3D)
 *   **构建工具**：`Vite`
 *   **桌面框架**：`Electron`
 *   **数据库**：`SQLite` (better-sqlite3)
-*   **后端服务**：`Node.js` + `Express` (可选，用于远程模式)
+*   **后端服务**：`Node.js` + `Express`
 
 ---
 
@@ -27,10 +27,7 @@ Elect Tool 是一个基于 Vue 3 + Ant Design Vue + Electron 的现代化桌面�
 ```
 d:\DXY\ElectTool\
 ├── .github/                # GitHub 配置 (CI/CD)
-├── .trae/                  # Trae IDE 专属配置
-│   └── documents/          # 项目文档 (PRD, 技术方案)
 ├── build/                  # 打包资源目录 (图标等)
-├── dist/                   # 前端构建产物
 ├── electron/               # Electron 主进程代码
 │   ├── main.cjs            # 主进程入口 (窗口, IPC, 数据库)
 │   └── preload.cjs         # 预加载脚本 (安全 API)
@@ -38,7 +35,6 @@ d:\DXY\ElectTool\
 ├── src/                    # 前端渲染进程代码 (Vue)
 │   ├── components/         # 公共组件
 │   ├── pages/              # 页面视图 (AI, Map, 3D 等)
-│   ├── services/           # 前端服务层
 │   ├── stores/             # Pinia 状态管理
 │   ├── utils/              # 工具函数
 │   └── main.ts             # 入口文件
@@ -91,10 +87,10 @@ d:\DXY\ElectTool\
 
 ## 5. 服务部署/应用打包
 
-*   **想把代码部署到云服务器？**
+*   **如何把代码部署到云服务器？**
     👉 请阅读 **[`DEPLOY.md`](./DEPLOY.md)**
 
-*   **想打包成安装包发给别人？**
+*   **如何打包成安装包发给别人？**
     👉 请阅读 **[`BUILD_GUIDE.md`](./BUILD_GUIDE.md)**
 
 ---
