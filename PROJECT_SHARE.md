@@ -155,85 +155,9 @@ function create(entity) {
   return entity;
 }
 ```
-
 > SQLite 连接与建表在 `server/db/sqlite.cjs` 完成，首次启动会自动创建数据文件与表结构。
 
-#### 5) 使用示例
-
-```bash
-# 新增
-curl -X POST http://localhost:3000/api/notes \
-  -H "Content-Type: application/json" \
-  -d '{
-    "projectId": null,
-    "title": "我的第一条笔记",
-    "contentHtml": "<p>Hello ElectTool</p>",
-    "tags": ["demo"]
-  }'
-
-# 查询列表
-curl http://localhost:3000/api/notes
-
-# 查询详情
-curl http://localhost:3000/api/notes/<id>
-
-# 更新
-curl -X PUT http://localhost:3000/api/notes/<id> \
-  -H "Content-Type: application/json" \
-  -d '{"title": "标题已更新"}'
-
-# 删除
-curl -X DELETE http://localhost:3000/api/notes/<id>
-```
-
-
-### 2.3 前端代码结合 GitHub 流水线实现自动打包
-
-通过 GitHub Actions 实现代码提交后自动构建 Windows 和 macOS 安装包。
-
-- **Workflow 配置文件 (`.github/workflows/build.yml`)**:
-
-  ```yaml
-  name: Build/Release
-  on:
-    push:
-      tags: ["v*"] # 仅在推送 v 开头的 tag 时触发
-
-  jobs:
-    release:
-      runs-on: ${{ matrix.os }}
-      strategy:
-        matrix:
-          os: [macos-latest, windows-latest] # 并行构建双平台
-
-      steps:
-        - uses: actions/checkout@v4
-        - uses: actions/setup-node@v4
-          with:
-            node-version: 20
-        - run: npm install
-        - name: Build & Release
-          uses: samuelmeuli/action-electron-builder@v1
-          with:
-            github_token: ${{ secrets.GITHUB_TOKEN }}
-            release: true # 自动发布到 GitHub Releases
-  ```
-
-### 2.4 后端服务器购买、部署及上云
-
-为了让应用具备云端同步能力，我们将 Node.js 服务部署在云服务器上。
-
-1.  **服务器购买**: 选择了阿里云的轻量应用服务器，配置 Linux 系统(Ubuntu)。
-2.  **环境配置**:
-    - 安装 Node.js (使用 nvm 管理版本)。
-    - 安装 PM2 (进程守护工具，保证服务崩溃自动重启)。
-    - 配置 Nginx (反向代理，配置 SSL 证书实现 HTTPS)。
-3.  **部署流程**:
-    - 将 `server/` 目录代码上传至服务器。
-    - 运行 `npm install` 安装依赖。
-    - 使用 `pm2 start server/index.cjs --name elect-server` 启动服务。
-
-### 2.5 前端 Three.js 实现地球旋转 + 飞线图
+### 2.3 前端 Three.js 实现地球旋转 + 飞线图
 
 在 GIS 页面 (`src/pages/gis/Index.vue`) 中，利用 `three.js` 和 `earth-flyline` 库实现了地球效果。
 
@@ -263,7 +187,7 @@ curl -X DELETE http://localhost:3000/api/notes/<id>
   };
   ```
 
-### 2.6 主题过渡动画 + Logo 点击弹窗操作按钮
+### 2.4 主题过渡动画 + Logo 点击弹窗操作按钮
 
 - **主题过渡动画 (`src/components/ThemeSwitch.vue`)**:
   使用原生的 View Transitions API 实现点击处的圆形扩散切换效果。
@@ -295,6 +219,52 @@ curl -X DELETE http://localhost:3000/api/notes/<id>
 - **Logo 径向菜单 (`src/components/LogoRadialMenu.vue`)**:
   点击左上角 Logo 展开径向菜单，包含最小化、最大化、关闭等功能。通过 CSS `transform` 和 `transition-delay` 实现扇形展开动画。
 
+### 2.5 前端代码结合 GitHub 流水线实现自动打包
+
+通过 GitHub Actions 实现代码提交后自动构建 Windows 和 macOS 安装包。
+
+- **Workflow 配置文件 (`.github/workflows/build.yml`)**:
+
+  ```yaml
+  name: Build/Release
+  on:
+    push:
+      tags: ["v*"] # 仅在推送 v 开头的 tag 时触发
+
+  jobs:
+    release:
+      runs-on: ${{ matrix.os }}
+      strategy:
+        matrix:
+          os: [macos-latest, windows-latest] # 并行构建双平台
+
+      steps:
+        - uses: actions/checkout@v4
+        - uses: actions/setup-node@v4
+          with:
+            node-version: 20
+        - run: npm install
+        - name: Build & Release
+          uses: samuelmeuli/action-electron-builder@v1
+          with:
+            github_token: ${{ secrets.GITHUB_TOKEN }}
+            release: true # 自动发布到 GitHub Releases
+  ```
+
+### 2.6 后端服务器购买、部署及上云
+
+为了让应用具备云端同步能力，我们将 Node.js 服务部署在云服务器上。
+
+1.  **服务器购买**: 选择了阿里云的轻量应用服务器，配置 Linux 系统(Ubuntu)。
+2.  **环境配置**:
+    - 安装 Node.js (使用 nvm 管理版本)。
+    - 安装 PM2 (进程守护工具，保证服务崩溃自动重启)。
+    - 配置 Nginx (反向代理，配置 SSL 证书实现 HTTPS)。
+3.  **部署流程**:
+    - 将 `server/` 目录代码上传至服务器。
+    - 运行 `npm install` 安装依赖。
+    - 使用 `pm2 start server/index.cjs --name elect-server` 启动服务。
+
 ### 2.7 macOS 系统下项目无签名运行
 
 由于没有购买 Apple 开发者证书，打包出的 macOS 应用未签名，用户安装时会提示“文件已损坏”或“无法验证开发者”。
@@ -321,7 +291,7 @@ sudo xattr -r -d com.apple.quarantine /Applications/ElectTool.app
 
 ### 待完成与后续规划
 
-1.  **AI 深度集成**: 目前仅接入了基础对话，后续计划接入本地 LLM (如 Llama 3) 运行在 Electron 内部，并实现信息存储, 构建本地知识库。
+1.  **AI 深度集成**: 目前仅接入了基础对话，后续计划接入本地 LLM (如 Llama 3) 运行在 Electron 内部，并实现信息存储, 构建本地知识库，结合已有知识库+预设prompt，实现更贴合自身，更智能的对话。
 2.  **GIS 功能增强**: 增加更多空间分析工具（缓冲区分析、路径规划）。
 3.  **用户系统完善**: 完善云端同步机制，支持多端数据实时同步。
 4.  **性能优化**: 优化 3D 模型加载速度，减少内存占用。

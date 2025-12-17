@@ -147,11 +147,114 @@ html[data-dark-mode="true"] .ant-upload .ant-btn:focus {
 /* Fix Input/Textarea borders in dark mode */
 html[data-dark-mode="true"] .ant-input,
 html[data-dark-mode="true"] .ant-input-password,
-html[data-dark-mode="true"] .ant-input-affix-wrapper {
+html[data-dark-mode="true"] .ant-input-affix-wrapper,
+html[data-dark-mode="true"] .ant-input-number {
   background-color: var(--sidebar-bg);
   border-color: var(--border-color-base);
   color: var(--text-primary);
 }
+
+html[data-dark-mode="true"] .ant-input-number-input {
+  color: var(--text-primary);
+  background-color: transparent;
+}
+
+html[data-dark-mode="true"] .ant-input-number-group-addon {
+  background-color: rgba(255, 255, 255, 0.05);
+  border-color: var(--border-color-base);
+  color: var(--text-secondary);
+}
+
 html[data-dark-mode="true"] .ant-input::placeholder {
   color: #5a6475;
+}
+
+/* Fix Dropdown Menu in dark mode */
+html[data-dark-mode="true"] .ant-dropdown-menu {
+  background-color: var(--sidebar-bg);
+  border: 1px solid var(--border-color-base);
+}
+
+/* Default text color white */
+html[data-dark-mode="true"] .ant-dropdown-menu-item,
+html[data-dark-mode="true"] .ant-dropdown-menu-submenu-title {
+  color: rgba(255, 255, 255, 0.85) !important;
+}
+
+/* Default icon color white */
+html[data-dark-mode="true"] .ant-dropdown-menu-item .anticon,
+html[data-dark-mode="true"] .ant-dropdown-menu-submenu-title .anticon {
+  color: rgba(255, 255, 255, 0.85) !important;
+}
+
+/* Hover/Active state: Theme color background, white text */
+html[data-dark-mode="true"] .ant-dropdown-menu-item:hover,
+html[data-dark-mode="true"] .ant-dropdown-menu-submenu-title:hover,
+html[data-dark-mode="true"] .ant-dropdown-menu-item-active {
+  background-color: var(--brand-primary) !important;
+  color: #ffffff !important;
+}
+
+html[data-dark-mode="true"] .ant-dropdown-menu-item:hover .anticon,
+html[data-dark-mode="true"] .ant-dropdown-menu-submenu-title:hover .anticon,
+html[data-dark-mode="true"] .ant-dropdown-menu-item-active .anticon {
+  color: #ffffff !important;
+}
+
+/* Selected state: Theme color background, white text */
+html[data-dark-mode="true"] .ant-dropdown-menu-item-selected {
+  background-color: var(--brand-primary) !important;
+  color: #ffffff !important;
+}
+
+html[data-dark-mode="true"] .ant-dropdown-menu-item-selected .ant-dropdown-menu-title-content,
+html[data-dark-mode="true"] .ant-dropdown-menu-item-selected .anticon,
+html[data-dark-mode="true"] .ant-dropdown-menu-item-selected span {
+  color: #ffffff !important;
+}
+
+/* Fix Select dropdown in dark mode */
+html[data-dark-mode="true"] .ant-select:not(.ant-select-disabled) .ant-select-selector {
+  background-color: var(--sidebar-bg) !important;
+  border-color: var(--border-color-base) !important;
+  color: var(--text-primary) !important;
+}
+
+html[data-dark-mode="true"] .ant-select-selection-item {
+  color: var(--text-primary) !important;
+}
+
+html[data-dark-mode="true"] .ant-select-arrow {
+  color: var(--text-secondary) !important;
+}
+
+html[data-dark-mode="true"] .ant-select-dropdown {
+  background-color: var(--sidebar-bg) !important;
+  border: 1px solid var(--border-color-base) !important;
+}
+
+/* Default option text color white */
+html[data-dark-mode="true"] .ant-select-item {
+  color: rgba(255, 255, 255, 0.85) !important;
+}
+
+/* Selected option: Theme color background, white text */
+html[data-dark-mode="true"] .ant-select-item-option-selected:not(.ant-select-item-option-disabled) {
+  background-color: var(--brand-primary) !important;
+  color: #ffffff !important;
+  font-weight: 600;
+}
+
+html[data-dark-mode="true"] .ant-select-item-option-selected:not(.ant-select-item-option-disabled) .ant-select-item-option-content {
+  color: #ffffff !important;
+}
+
+/* Hover/Active option: Theme color background, white text */
+html[data-dark-mode="true"] .ant-select-item-option-active:not(.ant-select-item-option-disabled) {
+  background-color: var(--brand-primary) !important;
+  color: #ffffff !important;
+}
+
+html[data-dark-mode="true"] .ant-select-item-option-active:not(.ant-select-item-option-disabled) .ant-select-item-option-content {
+  color: #ffffff !important;
 }

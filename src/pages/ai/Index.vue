@@ -290,7 +290,7 @@ const callModel = async (history: ChatMsg[]) => {
     body: JSON.stringify({
       model: CONFIG.model,
       messages: history.map((m) => ({ role: m.role, content: m.content })),
-      temperature: 0.7,
+      temperature: 1.3
     }),
   });
   if (!res.ok) throw new Error(await res.text());

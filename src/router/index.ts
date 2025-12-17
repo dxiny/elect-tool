@@ -2,6 +2,7 @@ import { createRouter, createWebHashHistory } from 'vue-router'
 import Home from '@/pages/home/index.vue'
 import AIIndex from '@/pages/ai/Index.vue'
 import GisIndex from '@/pages/gis/Index.vue'
+import ToolsIndex from '@/pages/tools/Index.vue'
 import Profile from '@/pages/profile/Index.vue'
 
 const routes = [
@@ -32,7 +33,7 @@ const routes = [
   {
     path: '/tools',
     name: 'Tools',
-    component: Home,
+    component: ToolsIndex,
     meta: { title: '工具' }
   },
   {
