@@ -15,7 +15,8 @@ export default defineConfig({
       '/socket.io': {
         target: 'http://116.62.133.219:3000',
         changeOrigin: true,
-        ws: true
+        ws: true,
+        secure: false
       }
     }
   },

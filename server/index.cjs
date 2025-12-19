@@ -1,7 +1,7 @@
 // 入口文件：仅负责读取配置并启动 HTTP 服务，不包含业务逻辑
 const http = require('http')
 const { Server } = require('socket.io')
-const { port } = require('./config/env.cjs')
+const { port } = 3002
 const express = require('express')
 const cors = require('cors')
 
@@ -26,8 +26,10 @@ const server = http.createServer(app)
 const io = new Server(server, {
   cors: {
     origin: '*',
-    methods: ['GET', 'POST']
-  }
+    methods: ['GET', 'POST'],
+    credentials: true
+  },
+  allowEIO3: true // 兼容旧版本协议
 })
 
 // 引入游戏逻辑处理器
@@ -49,6 +51,8 @@ io.on('connection', socket => {
 })
 
 // 启动服务器监听指定端口
-server.listen(port, () => {
-  console.log(`服务已启动，端口：${port}`)
+// 强制使用 3002 端口并监听 0.0.0.0 (IPv4)，避免端口冲突和 IP 绑定问题
+const PORT = 3002
+server.listen(PORT, '0.0.0.0', () => {
+  console.log(`服务已启动，端口：${PORT}`)
 })
