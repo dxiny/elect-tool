@@ -1,15 +1,15 @@
-# ElectTool 项目分享文档
+# Electron + node.js 应用构建分享
 
 ## 1. 项目概览
 
-ElectTool 是一个基于 Electron + Vue 3 + Node.js 的桌面应用，集成了 GIS 服务、3D 模型、AI 助手等功能。项目采用前后端分离架构，支持 gis 相关服务、3d 模型可视化、ai 助手等功能。
+ElectTool 是一个基于 Electron + Vue 3 + Node.js 的桌面应用，集成了 GIS 服务、3D 模型、AI问答模型等功能。项目采用前后端分离架构，支持 gis 相关服务、3d 模型可视化、ai 助手等功能。
 
 **核心技术栈：**
 
 - **桌面端框架**: Electron
-- **前端框架**: Vue 3 + TypeScript + Vite
+- **前端框架**: Vue 3
 - **UI 组件库**: Ant Design Vue
-- **后端服务**: Node.js (Express)
+- **后端服务**: Node.js
 - **数据库**: SQLite (better-sqlite3)
 - **可视化**: Three.js + earth-flyline
 - **自动化打包**: GitHub Actions
@@ -275,8 +275,6 @@ function create(entity) {
 ```bash
 sudo xattr -r -d com.apple.quarantine /Applications/ElectTool.app
 ```
-
-或者在“系统设置 -> 隐私与安全性”中选择“仍要打开”。
 
 ---
 

@@ -123,7 +123,13 @@ sudo nginx -t
 sudo systemctl reload nginx
 ```
 
-## 6. 常见问题排查
+
+### 6.3 常见问题排查
+
+- **Socket 连接失败**：
+  - 检查客户端控制台日志 `Connecting to Socket Server: ...` 输出的地址是否正确。
+  - 检查服务器防火墙/安全组是否允许 3000 端口入站流量。
+  - 如果使用 HTTPS，确保 Socket.io 客户端也使用 `https://` 协议，且 Nginx 正确配置了 WebSocket 转发头 (`Upgrade` 和 `Connection`).
 
 - **接口 404**：检查 Nginx 配置是否正确转发 `/api` 到 `3000` 端口。
 - **CORS 错误**：检查 Nginx 配置中是否添加了 `Access-Control-Allow-Origin` 头，或后端 `cors` 中间件是否生效。

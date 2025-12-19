@@ -38,6 +38,23 @@
       <div class="editor-pane">
         <div class="pane-header">
           <span>结果</span>
+          <div class="search-box">
+             <a-input-search
+              v-model:value="searchText"
+              placeholder="搜索..."
+              style="width: 150px"
+              size="small"
+              @search="handleSearch"
+              @keyup.enter="handleSearch"
+            />
+            <span v-if="searchResult.count > 0" class="search-info">
+              {{ searchResult.current }}/{{ searchResult.count }}
+            </span>
+            <div v-if="searchResult.count > 0" class="search-nav">
+              <a-button type="text" size="small" @click="prevMatch"><UpOutlined /></a-button>
+              <a-button type="text" size="small" @click="nextMatch"><DownOutlined /></a-button>
+            </div>
+          </div>
           <div class="pane-actions">
             <a-button
               type="text"
@@ -50,31 +67,42 @@
             </a-button>
           </div>
         </div>
-        <a-textarea
-          v-model:value="jsonOutput"
-          readonly
-          class="code-editor output-editor"
-          placeholder="处理结果将显示在这里"
-          :bordered="false"
-        />
+        <div class="editor-wrapper" ref="outputWrapper">
+          <textarea
+            ref="outputRef"
+            v-model="jsonOutput"
+            readonly
+            class="code-editor output-editor native-textarea"
+            placeholder="处理结果将显示在这里"
+          ></textarea>
+        </div>
       </div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref } from "vue";
+import { ref, reactive, nextTick } from "vue";
 import {
   CodeOutlined,
   DeleteOutlined,
   AlignLeftOutlined,
   CompressOutlined,
   CopyOutlined,
+  UpOutlined,
+  DownOutlined
 } from "@ant-design/icons-vue";
 import { message } from "ant-design-vue";
 
 const jsonInput = ref("");
 const jsonOutput = ref("");
+const searchText = ref("");
+const outputRef = ref<HTMLTextAreaElement | null>(null);
+const searchResult = reactive({
+  indices: [] as number[],
+  current: 0,
+  count: 0
+});
 
 const formatJson = () => {
   if (!jsonInput.value.trim()) return;
@@ -82,6 +110,7 @@ const formatJson = () => {
     const obj = JSON.parse(jsonInput.value);
     jsonOutput.value = JSON.stringify(obj, null, 2);
     message.success("格式化成功");
+    clearSearch();
   } catch (e) {
     message.error("无效的 JSON 格式");
   }
@@ -93,6 +122,7 @@ const compressJson = () => {
     const obj = JSON.parse(jsonInput.value);
     jsonOutput.value = JSON.stringify(obj);
     message.success("压缩成功");
+    clearSearch();
   } catch (e) {
     message.error("无效的 JSON 格式");
   }
@@ -101,6 +131,7 @@ const compressJson = () => {
 const clearJson = () => {
   jsonInput.value = "";
   jsonOutput.value = "";
+  clearSearch();
 };
 
 const copyResult = () => {
@@ -109,9 +140,80 @@ const copyResult = () => {
     message.success("已复制到剪贴板");
   });
 };
+
+// Search Logic
+const clearSearch = () => {
+  searchText.value = "";
+  searchResult.indices = [];
+  searchResult.current = 0;
+  searchResult.count = 0;
+};
+
+const handleSearch = () => {
+  if (!jsonOutput.value || !searchText.value) {
+    searchResult.indices = [];
+    searchResult.count = 0;
+    searchResult.current = 0;
+    return;
+  }
+
+  const text = jsonOutput.value;
+  const query = searchText.value;
+  const indices: number[] = [];
+  let index = text.indexOf(query);
+
+  while (index !== -1) {
+    indices.push(index);
+    index = text.indexOf(query, index + 1);
+  }
+
+  searchResult.indices = indices;
+  searchResult.count = indices.length;
+  
+  if (indices.length > 0) {
+    searchResult.current = 1;
+    highlightMatch(indices[0]);
+  } else {
+    searchResult.current = 0;
+    message.info("未找到匹配项");
+  }
+};
+
+const nextMatch = () => {
+  if (searchResult.count === 0) return;
+  searchResult.current = searchResult.current >= searchResult.count ? 1 : searchResult.current + 1;
+  highlightMatch(searchResult.indices[searchResult.current - 1]);
+};
+
+const prevMatch = () => {
+  if (searchResult.count === 0) return;
+  searchResult.current = searchResult.current <= 1 ? searchResult.count : searchResult.current - 1;
+  highlightMatch(searchResult.indices[searchResult.current - 1]);
+};
+
+const highlightMatch = (index: number) => {
+  const textarea = outputRef.value;
+  if (!textarea) return;
+
+  textarea.focus();
+  textarea.setSelectionRange(index, index + searchText.value.length);
+  
+  // Calculate scroll position
+  // Simple approach: blur and focus triggers auto scroll in most browsers
+  // Or calculate line number
+  const textBefore = jsonOutput.value.substring(0, index);
+  const lineNum = textBefore.split('\n').length;
+  const lineHeight = 21; // Approximate line height based on font-size 13px * 1.6
+  const scrollTop = (lineNum - 1) * lineHeight;
+  
+  // Center the match
+  textarea.scrollTop = Math.max(0, scrollTop - textarea.clientHeight / 2);
+};
+
 </script>
 
 <style scoped>
+/* ... existing styles ... */
 .tool-content {
   min-height: 100%;
   display: flex;
@@ -192,12 +294,46 @@ const copyResult = () => {
   background: var(--bg-layout, #fafafa);
 }
 
+.native-textarea {
+  width: 100%;
+  height: 100%;
+  border: none;
+  outline: none;
+  resize: none;
+}
+
+.editor-wrapper {
+  flex: 1;
+  display: flex;
+  min-height: 400px;
+}
+
 .actions-bar {
   display: flex;
   flex-direction: column;
   justify-content: center;
   gap: 12px;
   padding: 0 8px;
+}
+
+.search-box {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-right: auto; /* Push to left near title or adjust as needed */
+  margin-left: 16px;
+}
+
+.search-info {
+  font-size: 12px;
+  color: #888;
+  min-width: 40px;
+  text-align: center;
+}
+
+.search-nav {
+  display: flex;
+  gap: 2px;
 }
 
 /* Dark Mode Overrides */

@@ -42,7 +42,7 @@ git push origin v1.0.0
 2.  点击顶部导航栏的 **Actions**。
 3.  你会看到一个名为 **Build/Release** 的工作流正在运行。
 4.  点击进入可以看到两个并行的任务：`release (macos-latest)` 和 `release (windows-latest)`。
-5.  通常构建需要 5-10 分钟。
+5.  通常构建需要 2-4 分钟。
 
 ### 第五步：下载安装包
 构建完成后，无需在 Actions 页面寻找产物，直接去 Releases 页面：
