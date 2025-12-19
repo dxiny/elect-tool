@@ -65,7 +65,7 @@ async function waitForPort(port) {
   const port = (await waitForPort(DEFAULT_PORT))
     || (await waitForPort(5173))
     || (await waitForPort(4001))
-    || (await waitForPort(3000))
+    || (await waitForPort(3002))
   
   if (!port) {
     console.error('开发服务在超时时间内未就绪')
