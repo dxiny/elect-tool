@@ -10,6 +10,15 @@ export default defineConfig({
     },
   },
   base: "./",
+  server: {
+    proxy: {
+      '/socket.io': {
+        target: 'http://116.62.133.219:3000',
+        changeOrigin: true,
+        ws: true
+      }
+    }
+  },
   build: {
     outDir: "dist",
     assetsDir: "assets",

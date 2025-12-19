@@ -9,8 +9,9 @@
       >
     </p>
 
+    <!-- 棋盘区域 -->
     <div class="game-area chess-area" ref="chessAreaRef" @click="handleChessClick">
-      <!-- Overlay for waiting game start -->
+      <!-- 游戏未开始时的遮罩层 -->
       <div v-if="!gameStarted" class="game-overlay">
         <div class="start-panel">
           <h3>准备开始</h3>
@@ -28,7 +29,7 @@
       </div>
 
       <div class="chess-board" :class="{ disabled: !gameStarted }">
-        <!-- Grid Lines -->
+        <!-- 棋盘网格线 -->
         <div
           v-for="i in 15"
           :key="`h-${i}`"
@@ -42,7 +43,7 @@
           :style="{ left: (i - 1) * 40 + 20 + 'px' }"
         ></div>
 
-        <!-- Pieces -->
+        <!-- 棋子渲染 -->
         <div
           v-for="(piece, key) in chessPieces"
           :key="key"
@@ -51,7 +52,7 @@
           :style="{ left: piece.x * 40 + 20 + 'px', top: piece.y * 40 + 20 + 'px' }"
         ></div>
 
-        <!-- Highlight Last Move -->
+        <!-- 最后一步落子的高亮标记 -->
         <div
           v-if="lastMove"
           class="last-move-marker"
@@ -60,7 +61,9 @@
       </div>
     </div>
 
+    <!-- 控制面板 -->
     <div class="controls chess-controls">
+      <!-- 角色选择 -->
       <div class="player-info">
         <a-radio-group
           v-model:value="myChessColor"
@@ -72,6 +75,7 @@
         </a-radio-group>
       </div>
 
+      <!-- 记分板 -->
       <div class="score-board">
         <div class="score-item">
           <span class="label">黑方胜</span>
@@ -84,6 +88,7 @@
         </div>
       </div>
 
+      <!-- 游戏控制按钮（重开） -->
       <div class="action-buttons">
         <a-button v-if="!restartRequested" @click="requestRestart">重新开始</a-button>
         <div v-else class="restart-confirm">
@@ -92,6 +97,7 @@
         </div>
       </div>
 
+      <!-- 获胜提示 -->
       <span class="turn-info" v-if="winner">
         🏆 获胜者: {{ winner === 'black' ? '黑方' : '白方' }}
       </span>
@@ -101,47 +107,54 @@
 
 <script setup lang="ts">
 import { ref, onMounted, reactive } from 'vue'
-import { Socket } from 'socket.io-client'
 import { message } from 'ant-design-vue'
 
 const props = defineProps<{
-  socketInstance: Socket | null
+  socketInstance: any
 }>()
 
+// 棋盘区域引用
 const chessAreaRef = ref<HTMLElement | null>(null)
-const myChessColor = ref('black') // 'black' | 'white'
-const currentTurn = ref('black') // 'black' starts first
+// 玩家状态
+const myChessColor = ref('black') // 当前玩家颜色：'black' | 'white'
+const currentTurn = ref('black') // 当前轮到谁下：黑方先手
+// 棋子数据：key为 "x,y" 坐标字符串，value 为棋子信息
 const chessPieces = reactive<Record<string, { x: number; y: number; color: string }>>({})
+// 最后一步落子位置（用于高亮显示）
 const lastMove = ref<{ x: number; y: number } | null>(null)
+// 获胜者
 const winner = ref('')
+// 记分板
 const scores = reactive({ black: 0, white: 0 })
 
-// Start Game State
-const gameStarted = ref(false)
-const startRequested = ref(false)
-const startRequester = ref('')
+// 游戏开始状态管理
+const gameStarted = ref(false) // 游戏是否进行中
+const startRequested = ref(false) // 是否发起了开始请求
+const startRequester = ref('') // 发起人颜色
 
-// Restart Game State
-const restartRequested = ref(false)
-const restartRequester = ref('')
+// 重新开始状态管理
+const restartRequested = ref(false) // 是否发起了重开请求
+const restartRequester = ref('') // 重开发起人
 
 onMounted(() => {
   if (props.socketInstance) {
+    // 监听对方落子事件
     props.socketInstance.on('chess-move', (data: any) => {
       const key = `${data.x},${data.y}`
+      // 更新棋盘数据
       chessPieces[key] = { x: data.x, y: data.y, color: data.color }
       lastMove.value = { x: data.x, y: data.y }
 
-      // Check win
+      // 检查是否获胜
       checkWin(data.x, data.y, data.color)
 
-      // Switch turn
+      // 切换回合
       if (!winner.value) {
         currentTurn.value = data.color === 'black' ? 'white' : 'black'
       }
     })
 
-    // Start Game Handlers
+    // 监听游戏开始请求
     props.socketInstance.on('chess-request-start', (data: any) => {
       startRequested.value = true;
       startRequester.value = data.requester;
@@ -150,16 +163,17 @@ onMounted(() => {
       }
     });
 
+    // 监听游戏正式开始
     props.socketInstance.on('chess-start-game', () => {
       gameStarted.value = true;
       startRequested.value = false;
       startRequester.value = '';
       message.success('游戏开始！黑方先手');
-      // Reset everything just in case
+      // 游戏开始时重置棋盘
       resetChessBoard(true);
     });
 
-    // Restart Handlers
+    // 监听重新开始请求
     props.socketInstance.on('chess-request-restart', (data: any) => {
       restartRequested.value = true
       restartRequester.value = data.requester
@@ -168,6 +182,7 @@ onMounted(() => {
       }
     })
 
+    // 监听确认重新开始
     props.socketInstance.on('chess-restart', () => {
       resetChessBoard()
       message.success('游戏已重新开始！')
@@ -175,6 +190,7 @@ onMounted(() => {
   }
 })
 
+// 处理棋盘点击（落子）
 const handleChessClick = (e: MouseEvent) => {
   if (!gameStarted.value) {
     message.warning('请先开始游戏')
@@ -185,60 +201,63 @@ const handleChessClick = (e: MouseEvent) => {
     return
   }
 
-  // Check turn
+  // 检查是否轮到自己下
   if (currentTurn.value !== myChessColor.value) {
     message.warning('还未轮到您落子')
     return
   }
 
   if (!chessAreaRef.value) return
+  // 获取点击位置相对于棋盘的坐标
   const rect = chessAreaRef.value.getBoundingClientRect()
   const offsetX = e.clientX - rect.left
   const offsetY = e.clientY - rect.top
 
-  // Board padding is 20px, grid size is 40px
+  // 计算落子点（棋盘格子大小40px，边距20px）
   const x = Math.round((offsetX - 20) / 40)
   const y = Math.round((offsetY - 20) / 40)
 
+  // 边界检查（15x15棋盘，索引0-14）
   if (x < 0 || x > 14 || y < 0 || y > 14) return
 
   const key = `${x},${y}`
-  if (chessPieces[key]) return // Already occupied
+  if (chessPieces[key]) return // 该位置已有棋子
 
-  // Optimistic update
+  // 乐观更新（先在本地显示，再发送请求）
   chessPieces[key] = { x, y, color: myChessColor.value }
   lastMove.value = { x, y }
 
-  // Check win locally first
+  // 本地检查是否获胜
   checkWin(x, y, myChessColor.value)
 
-  // Emit move
+  // 发送落子事件给服务器
   props.socketInstance?.emit('chess-move', { x, y, color: myChessColor.value })
 
-  // Switch turn locally
+  // 本地切换回合
   if (!winner.value) {
     currentTurn.value = myChessColor.value === 'black' ? 'white' : 'black'
   }
 }
 
+// 检查是否获胜（五子连珠）
 const checkWin = (x: number, y: number, color: string) => {
-  // Simple check in 4 directions
+  // 四个检查方向：横、竖、正斜、反斜
   const directions = [
-    [1, 0],
-    [0, 1],
-    [1, 1],
-    [1, -1]
+    [1, 0],   // 横向
+    [0, 1],   // 纵向
+    [1, 1],   // 正斜
+    [1, -1]   // 反斜
   ]
 
   for (const [dx, dy] of directions) {
     let count = 1
-    // Check forward
+    // 向前检查
     let i = 1
     while (chessPieces[`${x + i * dx},${y + i * dy}`]?.color === color) {
       count++
       i++
     }
-    // Check backward
+    // 向后检查
     i = 1
     while (chessPieces[`${x - i * dx},${y - i * dy}`]?.color === color) {
       count++
@@ -256,6 +275,7 @@ const checkWin = (x: number, y: number, color: string) => {
   }
 }
 
+// 发起开始游戏请求
 const requestStart = () => {
   props.socketInstance?.emit('chess-request-start', { requester: myChessColor.value });
   startRequested.value = true;
@@ -263,10 +283,12 @@ const requestStart = () => {
   message.loading('等待对方加入...', 0);
 };
 
+// 确认开始游戏（接受请求）
 const confirmStart = () => {
   props.socketInstance?.emit('chess-confirm-start');
 };
 
+// 发起重新开始请求
 const requestRestart = () => {
   props.socketInstance?.emit('chess-request-restart', { requester: myChessColor.value });
   restartRequested.value = true;
@@ -274,10 +296,12 @@ const requestRestart = () => {
   message.loading('已发送重开请求，等待对方确认...', 0);
 };
 
+// 确认重新开始
 const confirmRestart = () => {
   props.socketInstance?.emit('chess-confirm-restart');
 };
 
+// 重置棋盘状态
 const resetChessBoard = (keepScores = false) => {
   for (const key in chessPieces) delete chessPieces[key]
   winner.value = ''
@@ -286,11 +310,10 @@ const resetChessBoard = (keepScores = false) => {
   restartRequested.value = false
   restartRequester.value = ''
   if (!keepScores) {
-    // Usually restart means new round, keep scores. But if full reset?
-    // Let's keep scores for "Restart Round", maybe clear for "New Game"
-    // Requirement says "display who wins more", so we should keep scores across rounds
+    // 如果不是保留分数的重置（如彻底的新游戏），可以在这里清零分数
+    // 目前逻辑是保留分数的
   }
-  message.destroy() // Clear loading message
+  message.destroy() // 清除 loading 提示
 }
 </script>
 <style scoped>
