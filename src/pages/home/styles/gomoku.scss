@@ -1,0 +1,202 @@
+.game-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  max-width: 1000px;
+}
+
+/* Lobby Styles */
+.lobby-container {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+  padding: 40px;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+}
+
+.role-selection, .create-room, .room-list {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+}
+
+.room-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 16px;
+  width: 100%;
+}
+
+.room-card {
+  border: 1px solid #eee;
+  padding: 16px;
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  align-items: center;
+  background: #fafafa;
+}
+
+.room-info {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-size: 14px;
+  color: #666;
+}
+
+/* Waiting Styles */
+.waiting-container {
+  height: 400px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.waiting-content {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* Playing Styles */
+.game-playing-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+}
+
+.game-header {
+  text-align: center;
+  margin-bottom: 24px;
+}
+
+.subtitle {
+  color: var(--text-secondary);
+  font-size: 16px;
+}
+
+.black { color: #000; font-weight: bold; }
+.white { color: #999; font-weight: bold; }
+
+.game-content {
+  display: flex;
+  gap: 40px;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.chess-area {
+  width: 600px;
+  height: 600px;
+  background: #deb887;
+  position: relative;
+  cursor: pointer;
+  border: 4px solid #8b4513;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+  border-radius: 4px;
+}
+
+.chess-board {
+  width: 100%;
+  height: 100%;
+  position: relative;
+}
+
+.line {
+  position: absolute;
+  background: #000;
+}
+.line.horizontal { height: 1px; left: 20px; right: 20px; }
+.line.vertical { width: 1px; top: 20px; bottom: 20px; }
+
+.chess-piece {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  position: absolute;
+  transform: translate(-50%, -50%);
+  box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.4);
+  z-index: 10;
+}
+.chess-piece.black { background: radial-gradient(circle at 10px 10px, #666, #000); }
+.chess-piece.white { background: radial-gradient(circle at 10px 10px, #fff, #ddd); }
+
+.last-move-marker {
+  width: 10px;
+  height: 10px;
+  background: red;
+  border-radius: 50%;
+  position: absolute;
+  transform: translate(-50%, -50%);
+  z-index: 20;
+  pointer-events: none;
+}
+
+.controls {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  background: white;
+  padding: 24px;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  min-width: 250px;
+}
+
+.player-info {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #f5f5f5;
+  padding: 10px;
+  border-radius: 8px;
+}
+
+.info-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  opacity: 0.5;
+}
+.info-card.active {
+  opacity: 1;
+  font-weight: bold;
+}
+
+.score-board {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  font-size: 20px;
+  font-weight: bold;
+}
+
+.action-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.btn-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.winner-display {
+  text-align: center;
+  font-size: 18px;
+  color: #faad14;
+  font-weight: bold;
+  margin-bottom: 8px;
+}
