@@ -185,5 +185,5 @@ const handleChessClick = (e: MouseEvent) => {
 </script>
 
 <style lang="scss" scoped>
-@import '../../styles/gomoku.scss';
+@use '../../styles/gomoku.scss';
 </style>

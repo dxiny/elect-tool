@@ -23,5 +23,5 @@ const gameStore = useGameStore()
 </script>
 
 <style lang="scss" scoped>
-@import './styles/home.scss';
+@use './styles/home.scss';
 </style>
