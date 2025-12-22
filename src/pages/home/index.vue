@@ -1,12 +1,7 @@
 <template>
   <div class="home-container">
     <div class="header-controls">
-      <!-- 游戏模式切换按钮组 -->
-      <a-radio-group v-model:value="currentGame" button-style="solid" size="large">
-        <a-radio-button value="draw">🎨 你画我猜</a-radio-button>
-        <a-radio-button value="gomoku">⚫ 五子棋</a-radio-button>
-      </a-radio-group>
-
+      <div class="title">五子棋对战</div>
       <!-- Socket 连接状态展示 -->
       <div class="status">
         <span :class="{ connected: isConnected }">
@@ -15,23 +10,17 @@
       </div>
     </div>
 
-    <!-- 你画我猜游戏组件 -->
-    <DrawGame v-show="currentGame === 'draw'" :socketInstance="socket" />
-
     <!-- 五子棋游戏组件 -->
-    <GomokuGame v-show="currentGame === 'gomoku'" :socketInstance="socket" />
+    <GomokuGame :socketInstance="socket" />
   </div>
 </template>
 
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted } from 'vue'
 import { io, Socket } from 'socket.io-client'
-import DrawGame from './components/DrawGame.vue'
 import GomokuGame from './components/GomokuGame.vue'
 
 // 游戏状态管理
-// 当前选中的游戏模式：'draw' (你画我猜) 或 'gomoku' (五子棋)
-const currentGame = ref('draw')
 // Socket 连接状态
 const isConnected = ref(false)
 // Socket 实例对象
@@ -42,10 +31,7 @@ const socket = ref<any>(null)
  * 负责建立与服务器的实时通信通道，并监听连接状态变化
  */
 const initSocket = () => {
-  // 获取 Socket 服务器地址
-  // 优先使用环境变量 VITE_SERVER_URL，如果没有配置则回退到本地默认地址
-  // 在生产环境（Electron 打包版）中，这里应该指向云端服务器的 IP 或域名
-  const serverUrl = import.meta.env.VITE_SERVER_URL || 'http://localhost:3000'
+  const serverUrl = import.meta.env.VITE_SERVER_URL
   console.log('正在连接 Socket 服务器:', serverUrl)
 
   // 建立连接
@@ -101,6 +87,11 @@ onUnmounted(() => {
   justify-content: space-between;
   align-items: center;
   margin-bottom: 24px;
+}
+
+.title {
+  font-size: 24px;
+  font-weight: bold;
 }
 
 .status {

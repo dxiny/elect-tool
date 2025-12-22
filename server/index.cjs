@@ -33,7 +33,6 @@ const io = new Server(server, {
 })
 
 // 引入游戏逻辑处理器
-const drawHandler = require('./socket/drawHandler.cjs')
 const chessHandler = require('./socket/chessHandler.cjs')
 
 // 监听 Socket 连接事件
@@ -41,7 +40,6 @@ io.on('connection', socket => {
   console.log('User connected:', socket.id)
 
   // 注册游戏处理器
-  drawHandler(io, socket)
   chessHandler(io, socket)
 
   // 监听断开连接
