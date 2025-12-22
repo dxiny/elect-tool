@@ -1,6 +1,6 @@
 // 请求基础地址，来自环境变量
-// const BASE_URL = import.meta.env.VITE_API_BASE_URL || '';
-const BASE_URL = 'http://116.62.133.219'
+const BASE_URL = import.meta.env.VITE_API_BASE_URL || '';
+// const BASE_URL = 'http://116.62.133.219'
 
 // 统一的接口返回结构
 export interface ApiResponse<T = any> {

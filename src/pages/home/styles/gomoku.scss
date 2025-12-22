@@ -13,8 +13,9 @@
   flex-direction: column;
   gap: 32px;
   padding: 40px;
-  background: white;
+  background: var(--bg-secondary);
   border-radius: 12px;
+  border: 1px solid var(--border-color); /* 统一添加边框 */
   box-shadow: 0 4px 20px rgba(0,0,0,0.05);
 }
 
@@ -25,6 +26,10 @@
   gap: 16px;
 }
 
+.role-selection h3, .create-room h3, .room-list h3 {
+  color: var(--text-primary);
+}
+
 .room-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
@@ -33,14 +38,14 @@
 }
 
 .room-card {
-  border: 1px solid #eee;
+  border: 1px solid var(--border-color);
   padding: 16px;
   border-radius: 8px;
   display: flex;
   flex-direction: column;
   gap: 12px;
   align-items: center;
-  background: #fafafa;
+  background: var(--bg-primary);
 }
 
 .room-info {
@@ -48,7 +53,7 @@
   flex-direction: column;
   align-items: center;
   font-size: 14px;
-  color: #666;
+  color: var(--text-secondary);
 }
 
 /* Waiting Styles */
@@ -57,6 +62,7 @@
   display: flex;
   justify-content: center;
   align-items: center;
+  color: var(--text-primary);
 }
 
 .waiting-content {
@@ -79,13 +85,17 @@
   margin-bottom: 24px;
 }
 
+.game-header h1 {
+  color: var(--text-primary);
+}
+
 .subtitle {
   color: var(--text-secondary);
   font-size: 16px;
 }
 
-.black { color: #000; font-weight: bold; }
-.white { color: #999; font-weight: bold; }
+.black { color: var(--text-primary); font-weight: bold; }
+.white { color: var(--text-secondary); font-weight: bold; }
 
 .game-content {
   display: flex;
@@ -146,7 +156,7 @@
   display: flex;
   flex-direction: column;
   gap: 24px;
-  background: white;
+  background: var(--bg-secondary);
   padding: 24px;
   border-radius: 12px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
@@ -157,7 +167,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  background: #f5f5f5;
+  background: var(--bg-primary);
   padding: 10px;
   border-radius: 8px;
 }
@@ -167,10 +177,12 @@
   flex-direction: column;
   align-items: center;
   opacity: 0.5;
+  color: var(--text-secondary);
 }
 .info-card.active {
   opacity: 1;
   font-weight: bold;
+  color: var(--text-primary);
 }
 
 .score-board {
@@ -179,6 +191,17 @@
   gap: 20px;
   font-size: 20px;
   font-weight: bold;
+  color: var(--text-primary);
+}
+
+.score-item .label {
+  font-size: 12px;
+  color: var(--text-secondary);
+  margin-bottom: 4px;
+}
+
+.score-item .score {
+  color: var(--brand-primary);
 }
 
 .action-buttons {

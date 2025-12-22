@@ -5,6 +5,7 @@
   padding: 24px;
   height: 100%;
   color: var(--text-primary);
+  background-color: var(--bg-primary);
   overflow-y: auto;
   max-width: 1400px;
   max-height: 1200px;
@@ -22,6 +23,7 @@
 .title {
   font-size: 24px;
   font-weight: bold;
+  color: var(--text-primary);
 }
 
 .status {
