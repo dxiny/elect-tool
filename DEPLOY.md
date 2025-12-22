@@ -42,6 +42,14 @@ git pull codeup main
 # 如果报错 Could not read from remote repository.提示服务器上的 git 仓库没有配置名为 codeup 的远程地址,执行以下命令添加远程地址,然后再次拉取
 
 git remote add codeup https://codeup.aliyun.com/67e107468571f8159f9a986a/elect-tool.git
+
+
+# 如果报错 Your local changes to the following files would be overwritten by merge: package-lock.json ，需要先放弃lock文件的修改
+git checkout package-lock.json
+# 再次拉取代码
+git pull codeup main
+# 重新安装依赖
+npm install
 ```
 
 > **注意**：如果提示冲突，请先手动解决或强制重置（慎用）：`git reset --hard codeup/main`

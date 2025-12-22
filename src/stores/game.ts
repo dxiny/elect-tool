@@ -49,7 +49,8 @@ export const useGameStore = defineStore('game', {
       this.socket = io(serverUrl, {
         query: { userId: this.userId },
         reconnection: true,
-        reconnectionAttempts: 10
+        reconnectionAttempts: 10,
+        transports: ['websocket', 'polling']
       })
 
       // 4. 绑定基础事件

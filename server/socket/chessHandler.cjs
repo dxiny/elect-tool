@@ -48,6 +48,13 @@ module.exports = (io, socket) => {
         status: room.status,
         isHost: room.hostUserId === userId
       })
+
+      // 如果在 waiting 状态重连，重新广播列表，因为房间还在
+      if (room.status === 'waiting') {
+         broadcastRoomList()
+         // 还要通知客户端恢复到 waiting 界面
+         socket.emit('chess-room-created', { roomId })
+      }
     } else {
       // 房间数据不一致，清理映射
       delete userRoomMap[userId]
@@ -168,27 +175,24 @@ module.exports = (io, socket) => {
     console.log(`[Socket] leaveRoom called for room ${roomId}, isDisconnect: ${isDisconnect}, Socket: ${socket.id}`)
 
     // 如果是断开连接，且房间正在游戏中，则不立即销毁，而是等待重连
-    if (isDisconnect && room.status === 'playing') {
-      console.log(`[Socket] User disconnected from active game. Setting cleanup timer for room ${roomId}`)
-      // 设置清理定时器（例如 60秒）
-      // 如果对方也离开了，或者超时未重连，则销毁
-      
-      // 通知对方有人掉线
-      socket.to(roomId).emit('chess-user-disconnected', { userId })
-
-      // 如果房间已经有一个定时器了（说明另一个人也掉线了），或者这是第一个掉线
-      // 这里简化处理：只要有人掉线，就启动倒计时。如果所有人都掉线了，倒计时结束就销毁。
-      // 如果有一人重连，取消倒计时？不，必须等所有人都回来？
-      // 策略：如果房主掉线，给房主保留 60s。如果房客掉线，给房客保留 60s。
-      // 只要房间里还有人（或都在重连期），就保留房间。
-      
-      if (!roomCleanupTimers[roomId]) {
-         roomCleanupTimers[roomId] = setTimeout(() => {
-           console.log(`[Socket] Cleanup timer expired for room ${roomId}. Destroying.`)
-           destroyRoom(roomId)
-         }, 60000)
+    if (isDisconnect) {
+      // 允许 waiting 状态也保留一段时间，方便刷新页面
+      if (room.status === 'playing' || room.status === 'waiting') {
+        console.log(`[Socket] User disconnected from room ${roomId} (${room.status}). Setting cleanup timer.`)
+        
+        if (room.status === 'playing') {
+          socket.to(roomId).emit('chess-user-disconnected', { userId })
+        }
+        
+        // 如果房间里没人了（或者是房主掉了），设置倒计时
+        if (!roomCleanupTimers[roomId]) {
+           roomCleanupTimers[roomId] = setTimeout(() => {
+             console.log(`[Socket] Cleanup timer expired for room ${roomId}. Destroying.`)
+             destroyRoom(roomId)
+           }, 60000)
+        }
+        return
       }
-      return
     }
 
     // 只有房主或房客主动离开，或者等待状态下断线，才销毁
