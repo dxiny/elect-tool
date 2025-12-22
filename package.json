@@ -1,9 +1,9 @@
 {
   "name": "elect-tool",
   "private": true,
-  "version": "1.2.1",
+  "version": "1.2.2",
   "author": "ElectTool",
-  "description": "初始化项目",
+  "description": "优化房间页样式",
   "productName": "ElectTool",
   "type": "module",
   "main": "electron/main.cjs",

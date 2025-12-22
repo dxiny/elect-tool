@@ -4,6 +4,7 @@ import AIIndex from '@/pages/ai/Index.vue'
 import GisIndex from '@/pages/gis/Index.vue'
 import ToolsIndex from '@/pages/tools/Index.vue'
 import Profile from '@/pages/profile/Index.vue'
+import GameIndex from '@/pages/game/index.vue'
 
 const routes = [
   {
@@ -27,7 +28,7 @@ const routes = [
   {
     path: '/3d',
     name: '3D',
-    component: Home,
+    component: GameIndex,
     meta: { title: '3D' }
   },
   {
