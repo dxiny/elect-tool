@@ -1,4 +1,4 @@
-# ElectTool 全栈开发与部署实践分享稿
+# ElectTool 全栈开发与部署实践分享
 
 ## 1. 项目概览
 
@@ -175,7 +175,7 @@ export default defineConfig({
     - 浏览器截图新屏幕（新视图）。
 4.  **执行动画**：通过 CSS 伪元素 `::view-transition-new(root)` 控制蒙层的 `clip-path`，从一个小圆扩散到覆盖全屏。
 5. 性能：浏览器对截图进行 GPU 合成动画，比操作大量 DOM 节点的 CSS 动画要快得多，且不掉帧；并且业务逻辑只需要负责“切换类名”，动画逻辑完全由 CSS 处理，代码解耦
- 
+
 _(代码位置: `src/components/ThemeSwitch.vue`)_
 
 ---
@@ -194,30 +194,33 @@ _(代码位置: `src/components/ThemeSwitch.vue`)_
     const ctx = canvas.getContext("2d");
     ctx.drawImage(img, 0, 0, width, height);
     ```
-3.  **格式转换**：利用 `canvas.toBlob()` 方法导出为不同格式。
-    ```javascript
-    // 转为 JPG (指定质量)
-    canvas.toBlob(callback, "image/jpeg", 0.9);
-    // 转为 PNG
-    canvas.toBlob(callback, "image/png");
-    ```
-4.  **特殊格式 (ICO/ICNS)**：
-    *   **难点**：浏览器 Canvas 原生仅支持 `image/png` 和 `image/jpeg` 导出，不支持 Windows 图标 (.ico) 和 macOS 图标 (.icns)。
-    *   **解决**：我们需要**手动构建二进制文件**。
-    *   **实现细节**：
-        1.  先将 Canvas 导出为 PNG 的 `Blob` 数据。
-        2.  读取 PNG 的二进制流 (`Uint8Array`)。
-        3.  **拼接 ICO 文件头**：
-            *   Header (6字节): `00 00` (保留) + `01 00` (ICO类型) + `01 00` (图片数量)。
-            *   Directory (16字节): 包含图片的宽、高、色深、PNG数据大小、PNG数据偏移量。
-        4.  最后将 `[Header, Directory, PNG Data]` 组合成一个新的 Blob 对象，MIME 类型设为 `image/x-icon`。
-    *(代码位置: `ImageConverter.vue` 中的 `convert` 方法)*
+3. **格式转换**：利用 `canvas.toBlob()` 方法导出为不同格式。
+
+   ```javascript
+   // 转为 JPG (指定质量)
+   canvas.toBlob(callback, "image/jpeg", 0.9);
+   // 转为 PNG
+   canvas.toBlob(callback, "image/png");
+   ```
+4. **特殊格式 (ICO/ICNS)**：
+
+   *   **难点**：浏览器 Canvas 原生仅支持 `image/png` 和 `image/jpeg` 导出，不支持 Windows 图标 (.ico) 和 macOS 图标 (.icns)。
+   *   **解决**：我们需要**手动构建二进制文件**。
+   *   **实现细节**：
+       1.  先将 Canvas 导出为 PNG 的 `Blob` 数据。
+       2.  读取 PNG 的二进制流 (`Uint8Array`)。
+       3.  **拼接 ICO 文件头**：
+           *   Header (6字节): `00 00` (保留) + `01 00` (ICO类型) + `01 00` (图片数量)。
+           *   Directory (16字节): 包含图片的宽、高、色深、PNG数据大小、PNG数据偏移量。
+       4.  最后将 `[Header, Directory, PNG Data]` 组合成一个新的 Blob 对象，MIME 类型设为 `image/x-icon`。
+   *(代码位置: `ImageConverter.vue` 中的 `convert` 方法)*
 
 #### 3.1.3 socket 通信（五子棋）
 
-这是一个典型的**实时双向通信**场景。我们将重点讲解**Socket 功能**、**房间管理**和**游戏状态同步**的完整闭环。
+这是一个**实时双向通信**场景。我们将重点讲解**Socket 功能**、**房间管理**和**游戏状态同步**的完整闭环。
 
 **【用到的 Socket.io 核心功能】**
+
 1.  **命名空间与房间 (Rooms)**: 利用 `socket.join(roomId)` 和 `socket.to(roomId).emit(...)` 实现房间隔离，确保 A 房间的对战不影响 B 房间。
 2.  **事件广播 (Broadcast)**: 使用 `io.emit` 向所有人广播房间列表，使用 `socket.to(roomId).emit` 向房间内对手广播落子。
 3.  **连接管理**: 监听 `connection` 和 `disconnect` 事件，处理用户断线后的房间清理和状态重置。
@@ -241,30 +244,33 @@ _(代码位置: `src/components/ThemeSwitch.vue`)_
     }
     ```
 
-2.  **加入房间与游戏开始**：
-    当第二个用户调用 `chess-join-room` 时：
-    *   后端检查房间是否存在且状态为 `waiting`。
-    *   将 `status` 改为 `playing`。
-    *   向房间内所有用户广播 `chess-game-start` 事件，前端收到后跳转到棋盘页面。
+2. **加入房间与游戏开始**：
+   当第二个用户调用 `chess-join-room` 时：
 
-3.  **落子与胜负判定**：
-    *   **前端**：点击棋盘 -> 发送 `chess-move` 事件 -> (乐观更新) 本地先落子。
-    *   **后端**：
-        1.  **身份验证**：确保是房间内的玩家，且颜色对应（黑方只能下黑子）。
-        2.  **回合验证**：`if (data.color !== room.currentTurn) return;` 防止连下。
-        3.  **状态更新**：记录棋子位置，切换 `currentTurn`。
-        4.  **广播**：`socket.to(roomId).emit('chess-move')` 通知对手更新棋盘。
+   *   后端检查房间是否存在且状态为 `waiting`。
+   *   将 `status` 改为 `playing`。
+   *   向房间内所有用户广播 `chess-game-start` 事件，前端收到后跳转到棋盘页面。
 
-4.  **胜利条件 (前端计算)**：
-    虽然为了安全通常由后端判定，但为了演示简单，本项目由前端在每次落子后进行**五子连珠**算法检测：
-    *   遍历当前落子点的 **横、竖、撇、捺** 四个方向。
-    *   统计连续相同颜色的棋子数量，若 `>= 5` 则判定胜利。
+3. **落子与胜负判定**：
+
+   *   **前端**：点击棋盘 -> 发送 `chess-move` 事件 -> (乐观更新) 本地先落子。
+   *   **后端**：
+       1.  **身份验证**：确保是房间内的玩家，且颜色对应（黑方只能下黑子）。
+       2.  **回合验证**：`if (data.color !== room.currentTurn) return;` 防止连下。
+       3.  **状态更新**：记录棋子位置，切换 `currentTurn`。
+       4.  **广播**：`socket.to(roomId).emit('chess-move')` 通知对手更新棋盘。
+
+4. **胜利条件 (前端计算)**：
+   虽然为了安全通常由后端判定，但为了演示简单，本项目由前端在每次落子后进行检测：
+
+   *   遍历当前落子点的 **横、竖、撇、捺** 四个方向。
+   *   统计连续相同颜色的棋子数量，若 `>= 5` 则判定胜利。
 
 ---
 
 ### 3.2 自动化打包流程
 
-结合 **Vite 构建** 和 **GitHub Actions 流水线**，实现了从代码提交到打包的自动化。
+结合 **Vite 构建** 和 **GitHub Actions 流水线**，实现了从代码提交到打包的自动化。先来进行一个简单的操作让大家看一下是什么效果
 
 #### 3.2.1 前端构建配置 (Vite)
 
@@ -377,7 +383,7 @@ jobs:
 
 由于目前项目规模较小，且数据量不大，前期不需要复杂的数据库功能，所以没有使用 MySQL 等数据库，而是使用的Better-SQLite
 
-- **优点**：
+- **优点**：高性能、零配置、同步阻塞
   - **高性能**：同步操作简单直接。
   - **零配置**：就是一个 `.db` 文件，无需安装数据库软件。
   - **进程内运行**：不需要 TCP 连接，没有网络开销。
@@ -417,7 +423,7 @@ db.exec(`
   // 使用预编译语句
   const insert = db.prepare('INSERT INTO users (name, email) VALUES (?, ?)')
   // 执行插入
-  const info = insert.run('Alice', 'alice@example.com')
+  const info = insert.run('dxy', '1007811496@qq.com')
   console.log(info.lastInsertRowid) // 获取新生成的 ID
   ```
 
@@ -425,10 +431,11 @@ db.exec(`
 
   ```javascript
   const getUser = db.prepare('SELECT * FROM users WHERE id = ?')
-  const user = getUser.get(1)
+  const user = getUser.get(1007811496)
   ```
 
 - **查询多条 (Select All)**：使用 `all()`
+
   ```javascript
   const getAll = db.prepare('SELECT * FROM users')
   const users = getAll.all() // 返回数组
@@ -445,19 +452,15 @@ db.exec(`
 ```
 server/
 ├── index.cjs           # 【入口】HTTP 服务启动入口，Socket.io 初始化
-├── app.cjs             # 【应用】Express App 配置，中间件挂载
+├── app.cjs             # 【应用】中间件挂载
 ├── routes/             # 【路由层】定义 URL 路径 (如 /api/ai, /api/user)
 │   ├── ai.cjs          # AI 相关路由
-│   └── ...
 ├── controllers/        # 【控制层】处理 HTTP 请求，参数校验，响应结果
 │   ├── aiController.cjs
-│   └── ...
 ├── services/           # 【服务层】核心业务逻辑，复杂计算，调用 Repo
 │   ├── aiService.cjs
-│   └── ...
 ├── repositories/       # 【仓储层】直接操作数据库 (SQL 语句)
 │   ├── aiRepo.cjs
-│   └── ...
 ├── db/                 # 【基础设施】数据库连接配置
 │   └── sqlite.cjs
 ├── config/             # 【配置】环境变量，常量定义
@@ -474,7 +477,7 @@ server/
 1.  **CORS (`cors`)**：
     - 允许跨域资源共享。在开发时，前端在 `localhost:5173`，后端在 `localhost:3002`，端口不同属于跨域。CORS 允许前端安全地调用后端接口。
 2.  **JSON 解析器 (`express.json`)**：
-    - 配置为 `limit: '10mb'`。默认 Express 请求体限制较小，调大是为了支持上传 Base64 图片等大体积数据。
+    - 配置为 `limit: '10mb'`。默认请求体限制较小，调大是为了支持上传 Base64 图片等大体积数据。
 3.  **路由挂载 (`app.use('/api', ...)`)**：
     - 将不同模块的路由挂载到 `/api` 路径下，例如 `/api/ai`，让接口结构清晰。
 4.  **全局错误处理 (`errorHandler`)**：
@@ -536,11 +539,11 @@ server/
 接下来我们将探索更前沿的方向：
 
     **AI 深度集成** 目前ai调用只是简单的调用服务，后期考虑集成本地大模型，利用用户本地的 GPU 算力来实现更快、更有效的回答。
-
+    
     **数据库优化** 目前数据库采用 SQLite，后续考虑迁移到 MySQL 或 PostgreSQL，以支持更多用户和更复杂的查询。
-
+    
     **3D 模型渲染** 考虑集成更多3D模型渲染功能，如 3D 模型查看器、3D 模型编辑工具等。
-
+    
     **Socket 通信** 考虑配置更多复杂场景，操作更多实践案件，如实时协作、多用户交互等。
 
 谢谢大家！
