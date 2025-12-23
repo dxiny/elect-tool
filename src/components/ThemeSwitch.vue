@@ -578,17 +578,16 @@
 </template>
 <script setup lang="ts">
 import { ref, onMounted, onBeforeUnmount, nextTick } from "vue";
-const pressed = ref(false);
+
+// 初始化主题切换按钮状态
+const savedMode = localStorage.getItem("app:dark-mode");
+const domMode = document.body.getAttribute("data-dark-mode");
+const initialPressed = savedMode === "true" || domMode === "true";
+const pressed = ref(initialPressed);
+
 const toggleBtn = ref<HTMLButtonElement | null>(null);
 
 onMounted(() => {
-  // 初始化主题切换按钮
-  const savedMode = localStorage.getItem("app:dark-mode");
-  const domMode = document.body.getAttribute("data-dark-mode");
-  if (savedMode === "true" || domMode === "true") {
-    pressed.value = true;
-  }
-
   // 监听 DOM 变化，同步主题切换按钮状态
   const observer = new MutationObserver(() => {
     const isDark = document.body.getAttribute("data-dark-mode") === "true";
@@ -626,12 +625,11 @@ const TOGGLE = (e: MouseEvent) => {
     Math.max(y, innerHeight - y)
   );
 
-  const isGoingToDark = !isDark;
+  // 始终执行 Expand (扩散) 动画
+  // 不论是 白->黑 还是 黑->白，都让新视图从点击处扩散覆盖旧视图
+  // 这样能保证交互的一致性，且按钮状态能立即反馈
 
-  if (!isGoingToDark) {
-    document.documentElement.classList.add("theme-transition-back");
-  }
-
+  // 开始视图过渡动画
   const transition = document.startViewTransition(async () => {
     toggleDarkMode(!isDark);
     await nextTick();
@@ -643,40 +641,20 @@ const TOGGLE = (e: MouseEvent) => {
       `circle(${endRadius}px at ${x}px ${y}px)`,
     ];
 
-    if (isGoingToDark) {
-      // Light -> Dark
-      // Animate New (Dark) expanding
-      document.documentElement.animate(
-        {
-          clipPath: clipPath,
-        },
-        {
-          duration: 500,
-          easing: "ease-in",
-          pseudoElement: "::view-transition-new(root)",
-        }
-      );
-    } else {
-      // Dark -> Light
-      // Animate Old (Dark) shrinking
-      document.documentElement.animate(
-        {
-          clipPath: clipPath.reverse(),
-        },
-        {
-          duration: 500,
-          easing: "ease-out",
-          pseudoElement: "::view-transition-old(root)",
-        }
-      );
-    }
-  });
-
-  transition.finished.then(() => {
-    document.documentElement.classList.remove("theme-transition-back");
+    document.documentElement.animate(
+      {
+        clipPath: clipPath,
+      },
+      {
+        duration: 500,
+        easing: "ease-in",
+        pseudoElement: "::view-transition-new(root)",
+      }
+    );
   });
 };
 
+// 切换主题模式
 const toggleDarkMode = (isDark: boolean) => {
   pressed.value = isDark;
   const val = String(isDark);
@@ -684,7 +662,6 @@ const toggleDarkMode = (isDark: boolean) => {
   document.documentElement.setAttribute("data-dark-mode", val);
   localStorage.setItem("app:dark-mode", val);
 
-  // Also handle the ink-dark attribute if needed, though view transition handles visuals
   if (isDark) {
     document.getElementById("app")?.removeAttribute("data-ink-dark");
   }

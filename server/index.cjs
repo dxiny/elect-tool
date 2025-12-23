@@ -1,22 +1,9 @@
 // 入口文件：仅负责读取配置并启动 HTTP 服务，不包含业务逻辑
 const http = require('http')
 const { Server } = require('socket.io')
-const { port } = 3002
-const express = require('express')
-const cors = require('cors')
 
-let app
-try {
-  // 尝试加载主应用逻辑（包含路由、中间件等）
-  app = require('./app.cjs')
-} catch (e) {
-  // 如果加载失败，降级为最小化 Express 应用（通常用于测试或环境配置不完整时）
-  console.warn('加载 app.cjs 失败，降级为最小模式:', e.message)
-  app = express()
-  app.use(cors())
-  app.use(express.json())
-  app.get('/', (req, res) => res.send('Socket Server Running (Minimal Mode)'))
-}
+// 加载主应用逻辑（包含路由、中间件等）
+const app = require('./app.cjs')
 
 // 创建 HTTP 服务器
 const server = http.createServer(app)

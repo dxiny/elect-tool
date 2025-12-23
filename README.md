@@ -18,7 +18,7 @@ Elect Tool 是一个基于 Vue 3 + Ant Design Vue + Electron 的现代化桌面�
 *   **构建工具**：`Vite`
 *   **桌面框架**：`Electron`
 *   **数据库**：`SQLite` (better-sqlite3)
-*   **后端服务**：`Node.js` + `Express`
+*   **后端服务**：`Node.js`
 
 ---
 

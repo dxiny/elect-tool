@@ -419,7 +419,6 @@ const convert = async () => {
     let width = img.width;
     let height = img.height;
 
-    // Resize logic
     if (targetFormat.value === "ico") {
       width = 256;
       height = 256;

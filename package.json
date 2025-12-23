@@ -1,7 +1,7 @@
 {
   "name": "elect-tool",
   "private": true,
-  "version": "1.2.2",
+  "version": "1.2.3",
   "author": "ElectTool",
   "description": "优化房间页样式",
   "productName": "ElectTool",
